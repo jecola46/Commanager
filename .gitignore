@@ -1,0 +1,12 @@
+# .gitignore
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore local environment files
+venv/
+*.env
+
+# Ignore deck files
+*.json
