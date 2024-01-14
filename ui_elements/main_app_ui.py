@@ -2,6 +2,7 @@ import tkinter as tk
 from deck_collection import DeckCollection
 from ui_elements.deck_lister import DeckLister
 from deck_io import grab_decks_from_moxfield, load_decks_from_file, save_decks_to_file
+from deck_analysis_utils import is_missing_command_tower, is_missing_shock
 
 class MainAppUI(tk.Tk):
     def __init__(self):
@@ -57,46 +58,8 @@ class MainAppUI(tk.Tk):
         decks_with_missing = []
         for deck_id in decks_color_dict:
             colors = decks_color_dict[deck_id]
-            if "W" in colors and "U" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Hallowed Fountain"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "W" in colors and "B" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Godless Shrine"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "W" in colors and "R" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Sacred Foundry"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "W" in colors and "G" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Temple Garden"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "U" in colors and "B" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Watery Grave"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "U" in colors and "R" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Steam Vents"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "U" in colors and "G" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Breeding Pool"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "B" in colors and "R" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Blood Crypt"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "B" in colors and "G" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Overgrown Tomb"):
-                    decks_with_missing.append(deck_id)
-                    continue
-            if "R" in colors and "G" in colors:
-                if self.deck_collection.deck_does_not_have(deck_id, "Stomping Ground"):
-                    decks_with_missing.append(deck_id)
-                    continue
+            if is_missing_shock(self.deck_collection, deck_id, colors):
+                decks_with_missing.append(deck_id)
 
         self.deck_lister.highlight_decks(decks_with_missing)
 
@@ -105,9 +68,8 @@ class MainAppUI(tk.Tk):
         decks_with_missing = []
         for deck_id in decks_color_dict:
             colors = decks_color_dict[deck_id]
-            if len(colors) > 1:
-                if self.deck_collection.deck_does_not_have(deck_id, "Command Tower"):
-                    decks_with_missing.append(deck_id)
+            if is_missing_command_tower(self.deck_collection, deck_id, colors):
+                decks_with_missing.append(deck_id)
 
         self.deck_lister.highlight_decks(decks_with_missing)
 
