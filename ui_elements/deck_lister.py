@@ -1,14 +1,15 @@
 import tkinter as tk
 
-class DeckLister:
+class DeckLister(tk.Frame):
     def __init__(self, root, deck_collection):
+        super().__init__(root, None)
         self.root = root
         self.root.title("Deck Viewer")
         self.deck_collection = deck_collection
 
         # Create a listbox to display decks
         self.deck_listbox = tk.Listbox(root, selectmode=tk.MULTIPLE, height=65, width=80)
-        self.deck_listbox.pack(pady=10)
+        self.deck_listbox.grid(row=1, column=2, pady=10, sticky='w', rowspan=5)
 
         # Populate the listbox with deck names
         self.populate_deck_list()

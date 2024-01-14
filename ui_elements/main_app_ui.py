@@ -15,22 +15,36 @@ class MainAppUI(tk.Tk):
 
     def create_widgets(self):
         label = tk.Label(self, text="Enter your Moxfield username:")
-        label.pack(pady=10)
+        label.grid(row=0, column=0, pady=10, sticky='w')
 
         self.username_entry = tk.Entry(self)
-        self.username_entry.pack(pady=10)
+        self.username_entry.grid(row=0, column=1, pady=10, sticky='w')
 
         grab_button = tk.Button(self, text="Grab Decks", command=self.grab_decks)
-        grab_button.pack(pady=10)
+        grab_button.grid(row=1, column=0, pady=10, sticky='w')
 
         save_button = tk.Button(self, text="Save Decks to File", command=self.save_decks)
-        save_button.pack(pady=10)
+        save_button.grid(row=2, column=0, pady=10, sticky='w')
 
         load_button = tk.Button(self, text="Load Decks from File", command=self.load_decks)
-        load_button.pack(pady=10)
+        load_button.grid(row=3, column=0, pady=10, sticky='w')
 
         list_decks_button = tk.Button(self, text="List Decks", command=self.list_decks)
-        list_decks_button.pack(pady=10)
+        list_decks_button.grid(row=4, column=0, pady=10, sticky='w')
+
+        # Create the deck lister on the right side
+        self.deck_lister = DeckLister(self, self.deck_collection)
+        self.deck_lister.grid(row=0, column=2, rowspan=5, padx=10, pady=10, sticky='nsew')
+
+        # Configure row and column weights for resizing
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(4, weight=1)
+        self.grid_rowconfigure(5, weight=1)
+        self.grid_rowconfigure(6, weight=1)
+        self.grid_columnconfigure(2, weight=2)  # Adjust the weight based on your preference
 
     def grab_decks(self):
         deck_summaries, deck_details = grab_decks_from_moxfield(self.username_entry.get())
@@ -48,10 +62,10 @@ class MainAppUI(tk.Tk):
     def list_decks(self):
         self.deck_lister = DeckLister(self, self.deck_collection)
         missing_shocks_button = tk.Button(self, text="Find Decks with missing shocks", command=self.find_missing_shocks)
-        missing_shocks_button.pack(pady=10)
+        missing_shocks_button.grid(row=5, column=0, pady=10, sticky='w')
 
         missing_command_tower_button = tk.Button(self, text="Find Decks with missing command towers", command=self.find_missing_command_towers)
-        missing_command_tower_button.pack(pady=10)
+        missing_command_tower_button.grid(row=6, column=0, pady=10, sticky='w')
 
     def find_missing_shocks(self):
         decks_color_dict = self.deck_collection.get_deck_colors_map()
