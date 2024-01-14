@@ -1,5 +1,6 @@
 import tkinter as tk
 from deck_collection import DeckCollection
+from ui_elements.card_stats import CardStats
 from ui_elements.deck_lister import DeckLister
 from deck_io import grab_decks_from_moxfield, load_decks_from_file, save_decks_to_file
 from deck_analysis_utils import is_missing_command_tower, is_missing_shock
@@ -36,6 +37,9 @@ class MainAppUI(tk.Tk):
         self.deck_lister = DeckLister(self, self.deck_collection)
         self.deck_lister.grid(row=0, column=2, rowspan=5, padx=10, pady=10, sticky='nsew')
 
+        show_stats_button = tk.Button(self, text="Show Card Stats", command=self.show_card_stats)
+        show_stats_button.grid(row=6, column=2, pady=10, sticky='w')
+
         # Configure row and column weights for resizing
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -44,7 +48,17 @@ class MainAppUI(tk.Tk):
         self.grid_rowconfigure(4, weight=1)
         self.grid_rowconfigure(5, weight=1)
         self.grid_rowconfigure(6, weight=1)
-        self.grid_columnconfigure(2, weight=2)  # Adjust the weight based on your preference
+        self.grid_columnconfigure(2, weight=2) 
+
+    def show_card_stats(self):
+        # Clear the existing DeckLister
+        if hasattr(self, 'deck_lister'):
+            self.deck_lister.destroy_widgets()
+            self.deck_lister.destroy()
+
+        # Create the deck lister on the right side
+        self.card_stats = CardStats(self, self.deck_collection)
+        self.card_stats.grid(row=0, column=2, rowspan=5, padx=10, pady=10, sticky='nsew')
 
     def grab_decks(self):
         deck_summaries, deck_details = grab_decks_from_moxfield(self.username_entry.get())

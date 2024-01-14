@@ -34,6 +34,9 @@ class DeckLister(tk.Frame):
         deck = self.decks[self.deck_listbox.curselection()[0]]
         print(deck)
 
+    def destroy_widgets(self):
+        self.deck_listbox.destroy()
+
     def highlight_decks(self, decks):
         for x in range(len(self.decks)):
             deck = self.decks[x]

@@ -28,3 +28,18 @@ class DeckCollection:
 
     def deck_does_not_have(self, deck_id, card_name):
         return card_name not in self.deck_details[deck_id]['mainboard']
+
+    def get_card_stats(self):
+        cards = {}
+        for deck_id in self.deck_details:
+            deck_list = self.deck_details[deck_id]['mainboard']
+            for card_name in deck_list:
+                if card_name in cards:
+                    cards[card_name] += deck_list[card_name]['quantity']
+                else:
+                    cards[card_name] = deck_list[card_name]['quantity']
+
+        card_tuples = list(cards.items())
+        sorted_card_tuples = sorted(card_tuples, key=lambda x: x[1], reverse=True)
+
+        return sorted_card_tuples
