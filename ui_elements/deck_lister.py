@@ -42,3 +42,12 @@ class DeckLister(tk.Frame):
             deck = self.decks[x]
             if deck['publicId'] in decks:
                 self.deck_listbox.select_set(x)
+
+    def list_decks_with_num(self, decks_and_count):
+        # Clear existing items in the listbox
+        self.deck_listbox.delete(0, tk.END)
+
+        # Populate the listbox with deck names
+        for deck, count in decks_and_count:
+            self.deck_listbox.insert(tk.END, deck + f' {count}')
+            self.decks.append(deck)

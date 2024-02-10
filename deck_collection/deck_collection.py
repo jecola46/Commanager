@@ -43,3 +43,12 @@ class DeckCollection:
         sorted_card_tuples = sorted(card_tuples, key=lambda x: x[1], reverse=True)
 
         return sorted_card_tuples
+
+    def sort_decks_by_property(self, card_property_lambda):
+        sorted_decks = []
+        for deck_id, deck_list in self.deck_details.items():
+            count = sum(1 for card_name, card_info in deck_list['mainboard'].items() if card_property_lambda(card_info))
+            sorted_decks.append((deck_list['name'], count))
+
+        sorted_decks.sort(key=lambda x: x[1], reverse=True)
+        return sorted_decks

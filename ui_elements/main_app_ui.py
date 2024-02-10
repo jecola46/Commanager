@@ -81,6 +81,9 @@ class MainAppUI(tk.Tk):
         missing_command_tower_button = tk.Button(self, text="Find Decks with missing command towers", command=self.find_missing_command_towers)
         missing_command_tower_button.grid(row=6, column=0, pady=10, sticky='w')
 
+        low_power_button = tk.Button(self, text="Sort decks by num creatures 2 or less power", command=self.sort_by_creatures_power_2_or_less)
+        low_power_button.grid(row=7, column=0, pady=10, sticky='w')
+
     def find_missing_shocks(self):
         decks_color_dict = self.deck_collection.get_deck_colors_map()
         decks_with_missing = []
@@ -100,6 +103,17 @@ class MainAppUI(tk.Tk):
                 decks_with_missing.append(deck_id)
 
         self.deck_lister.highlight_decks(decks_with_missing)
+
+    def sort_by_creatures_power_2_or_less(self):
+        def is_power_2_or_less(card_info): 
+            try:
+                return 'power' in card_info['card'] and int(card_info['card']['power']) <= 2
+            except ValueError:
+                return False
+         
+        sorted_decks = self.deck_collection.sort_decks_by_property(is_power_2_or_less)
+
+        self.deck_lister.list_decks_with_num(sorted_decks)
 
 if __name__ == "__main__":
     app_ui = MainAppUI()
