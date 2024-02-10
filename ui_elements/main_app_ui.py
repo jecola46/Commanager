@@ -107,7 +107,9 @@ class MainAppUI(tk.Tk):
     def sort_by_creatures_power_2_or_less(self):
         def is_power_2_or_less(card_info): 
             try:
-                return 'power' in card_info['card'] and int(card_info['card']['power']) <= 2
+                if 'power' in card_info['card']:
+                    return int(card_info['card']['power']) <= 2
+                return len(card_info['card']['card_faces']) > 0 and 'power' in card_info['card']['card_faces'][0] and int(card_info['card']['card_faces'][0]['power']) <= 2
             except ValueError:
                 return False
          
