@@ -17,7 +17,7 @@ class DeckViewer(tk.Frame):
         self.configure(background='lightgray')
 
         # Create back button
-        self.back_button = tk.Button(self, text="Back", command=self.back_callback)
+        self.back_button = tk.Button(self, text="Back", command=self.back_pressed)
         self.back_button.pack(side=tk.TOP, pady=10)
 
         # Create and place widgets to display deck details
@@ -38,6 +38,13 @@ class DeckViewer(tk.Frame):
             self.commander_image_label.image = image  # Keep a reference to prevent garbage collection
             self.commander_image_label.pack(pady=10)
             print("packed")
+
+    def back_pressed(self):
+        self.back_button.destroy()
+        self.deck_name_label.destroy()
+        self.deck_description_label.destroy()
+        self.commander_image_label.destroy()
+        self.back_callback()
 
     def get_image_from_url(self, url):
         print(url)

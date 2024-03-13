@@ -98,7 +98,11 @@ def fetch_card_image_url_from_scryfall(card_name):
 
         if response.status_code == 200:
             card_json = response.json()
-            return card_json['image_uris']['normal']
+            print(card_json)
+            if 'image_uris' in card_json:
+                return card_json['image_uris']['normal']
+
+            return card_json['card_faces'][0]['image_uris']['normal']
 
         else:
             print(f"Failed to get card art. Status Code: {response}")
