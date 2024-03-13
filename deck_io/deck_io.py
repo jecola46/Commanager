@@ -90,3 +90,19 @@ def save_decks_to_file(deck_summaries, deck_details, summary_filename='deck_summ
 
         with open(details_filename, 'w') as file:
             json.dump(deck_details, file)
+
+def fetch_card_image_url_from_scryfall(card_name):
+    api_url = f'https://api.scryfall.com/cards/named?exact={card_name}'
+    try:
+        response = requests.get(api_url)
+
+        if response.status_code == 200:
+            card_json = response.json()
+            return card_json['image_uris']['normal']
+
+        else:
+            print(f"Failed to get card art. Status Code: {response}")
+            print(f"Failed to get card art. Status Code: {response.status_code}")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
