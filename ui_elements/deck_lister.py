@@ -8,8 +8,12 @@ class DeckLister(tk.Frame):
         self.root.title("Deck Viewer")
         self.deck_collection = deck_collection
 
+        self.create_deck_listbox()
+        
+
+    def create_deck_listbox(self):
         # Create a listbox to display decks
-        self.deck_listbox = tk.Listbox(root, selectmode=tk.MULTIPLE, height=65, width=80)
+        self.deck_listbox = tk.Listbox(self.root, selectmode=tk.MULTIPLE, height=65, width=80)
         self.deck_listbox.grid(row=1, column=2, pady=10, sticky='w', rowspan=5)
 
         # Populate the listbox with deck names
@@ -40,8 +44,11 @@ class DeckLister(tk.Frame):
         self.destroy_widgets()
 
         # Create and place the DeckViewer instance
-        deck_viewer = DeckViewer(self.root, self.deck_collection, deck)
+        deck_viewer = DeckViewer(self.root, self.deck_collection, deck, self.back_to_deck_lister)
         deck_viewer.grid(row=1, column=2, pady=10, sticky='w', rowspan=5)
+
+    def back_to_deck_lister(self):
+        self.create_deck_listbox()
 
     def destroy_widgets(self):
         self.deck_listbox.destroy()
