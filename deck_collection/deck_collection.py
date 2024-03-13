@@ -29,6 +29,9 @@ class DeckCollection:
     def deck_does_not_have(self, deck_id, card_name):
         return card_name not in self.deck_details[deck_id]['mainboard']
 
+    def get_deck_description(self, deck_id):
+        return self.deck_details[deck_id]['description']
+
     def get_card_stats(self):
         cards = {}
         for deck_id in self.deck_details:

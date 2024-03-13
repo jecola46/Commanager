@@ -1,4 +1,5 @@
 import tkinter as tk
+from .deck_viewer import DeckViewer
 
 class DeckLister(tk.Frame):
     def __init__(self, root, deck_collection):
@@ -32,7 +33,15 @@ class DeckLister(tk.Frame):
 
     def display_deck_details(self, event):
         deck = self.decks[self.deck_listbox.curselection()[0]]
+        self.show_deck_viewer(deck)
         print(deck)
+
+    def show_deck_viewer(self, deck):
+        self.destroy_widgets()
+
+        # Create and place the DeckViewer instance
+        deck_viewer = DeckViewer(self.root, self.deck_collection, deck)
+        deck_viewer.grid(row=1, column=2, pady=10, sticky='w', rowspan=5)
 
     def destroy_widgets(self):
         self.deck_listbox.destroy()
@@ -46,6 +55,7 @@ class DeckLister(tk.Frame):
     def list_decks_with_num(self, decks_and_count):
         # Clear existing items in the listbox
         self.deck_listbox.delete(0, tk.END)
+        self.decks = []
 
         # Populate the listbox with deck names
         for deck, count in decks_and_count:
