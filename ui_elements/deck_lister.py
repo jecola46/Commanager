@@ -36,15 +36,21 @@ class DeckLister(tk.Frame):
             self.decks.append(deck)
 
     def display_deck_details(self, event):
-        deck = self.decks[self.deck_listbox.curselection()[0]]
+        self.viewing_deck_index = self.deck_listbox.curselection()[0]
+        deck = self.decks[self.viewing_deck_index]
         self.show_deck_viewer(deck)
-        print(deck)
+
+    def show_next_deck(self):
+        if self.viewing_deck_index < len(self.decks) - 1:
+            self.viewing_deck_index += 1
+            deck = self.decks[self.viewing_deck_index]
+            self.show_deck_viewer(deck)
 
     def show_deck_viewer(self, deck):
         self.destroy_widgets()
 
         # Create and place the DeckViewer instance
-        deck_viewer = DeckViewer(self.root, self.deck_collection, deck, self.back_to_deck_lister)
+        deck_viewer = DeckViewer(self.root, self.deck_collection, deck, self.back_to_deck_lister, self.show_next_deck)
         deck_viewer.grid(row=1, column=2, pady=10, sticky='w', rowspan=5)
 
     def back_to_deck_lister(self):
@@ -68,3 +74,18 @@ class DeckLister(tk.Frame):
         for deck, count in decks_and_count:
             self.deck_listbox.insert(tk.END, deck + f' {count}')
             self.decks.append(deck)
+
+    def filter_decks_by_color(self, filter_set):
+        # Clear existing items in the listbox
+        self.deck_listbox.delete(0, tk.END)
+        new_decks = []
+
+        deck_colors_map = self.deck_collection.get_deck_colors_map()
+
+        for deck in self.decks:
+            deck_id = deck['publicId']
+            if filter_set.issubset(deck_colors_map[deck_id]):
+                self.deck_listbox.insert(tk.END, deck['name'])
+                new_decks.append(deck)
+
+        self.decks = new_decks

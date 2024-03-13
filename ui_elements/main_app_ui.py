@@ -47,7 +47,34 @@ class MainAppUI(tk.Tk):
         self.grid_rowconfigure(4, weight=1)
         self.grid_rowconfigure(5, weight=1)
         self.grid_rowconfigure(6, weight=1)
-        self.grid_columnconfigure(2, weight=2) 
+        self.grid_columnconfigure(2, weight=2)
+
+        self.color_filter_set = set()
+
+        # Create a frame for color filter buttons
+        color_filter_frame = tk.Frame(self)
+        color_filter_frame.grid(row=7, column=2, padx=10, pady=10, sticky='w')
+
+        # Create color filter buttons
+        colors = ['White', 'Blue', 'Black', 'Red', 'Green']
+        for idx, color in enumerate(colors):
+            color_button = tk.Button(color_filter_frame, text=color, command=lambda c=color: self.filter_by_color(c))
+            color_button.grid(row=7, column=idx + 2, padx=5)
+
+    def filter_by_color(self, color):
+        match color:
+            case 'White':
+                self.color_filter_set.add('W')
+            case 'Blue':
+                self.color_filter_set.add('U')
+            case 'Black':
+                self.color_filter_set.add('B')
+            case 'Red':
+                self.color_filter_set.add('R')
+            case 'Green':
+                self.color_filter_set.add('G')
+        self.deck_lister.filter_decks_by_color(self.color_filter_set)
+
 
     def show_card_stats(self):
         # Clear the existing DeckLister

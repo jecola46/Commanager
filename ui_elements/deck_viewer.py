@@ -2,12 +2,13 @@ import tkinter as tk
 from deck_io import fetch_card_image_from_scryfall
 
 class DeckViewer(tk.Frame):
-    def __init__(self, root, deck_collection, deck, back_callback):
+    def __init__(self, root, deck_collection, deck, back_callback, next_callback):
         super().__init__(root)
         self.root = root
         self.deck_collection = deck_collection
         self.deck = deck
         self.back_callback = back_callback
+        self.next_callback = next_callback
         print(deck)
 
         # Set background color
@@ -15,6 +16,10 @@ class DeckViewer(tk.Frame):
 
         # Create back button
         self.back_button = tk.Button(self, text="Back", command=self.back_pressed)
+        self.back_button.pack(side=tk.TOP, pady=10)
+
+        # Create next button
+        self.back_button = tk.Button(self, text="Next", command=self.next_pressed)
         self.back_button.pack(side=tk.TOP, pady=10)
 
         # Create and place widgets to display deck details
@@ -41,3 +46,10 @@ class DeckViewer(tk.Frame):
         self.deck_description_label.destroy()
         self.commander_image_label.destroy()
         self.back_callback()
+
+    def next_pressed(self):
+        self.back_button.destroy()
+        self.deck_name_label.destroy()
+        self.deck_description_label.destroy()
+        self.commander_image_label.destroy()
+        self.next_callback()
