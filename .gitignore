@@ -10,3 +10,6 @@ venv/
 
 # Ignore deck files
 *.json
+
+# Ignore image caching
+image_cache/*

@@ -32,8 +32,8 @@ class DeckCollection:
     def get_deck_description(self, deck_id):
         return self.deck_details[deck_id]['description']
 
-    def get_deck_commander(self, deck_id):
-        return self.deck_details[deck_id]['main']
+    def get_deck_commander_name(self, deck_id):
+        return list(self.deck_details[deck_id]['commanders'].keys())[0]
 
     def get_card_stats(self):
         cards = {}

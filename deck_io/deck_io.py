@@ -1,6 +1,11 @@
 import json
 import requests
 import time
+import requests
+import os
+import re
+from PIL import Image, ImageTk
+from io import BytesIO
 
 def grab_decks_from_moxfield(username):
     """
@@ -91,18 +96,35 @@ def save_decks_to_file(deck_summaries, deck_details, summary_filename='deck_summ
         with open(details_filename, 'w') as file:
             json.dump(deck_details, file)
 
-def fetch_card_image_url_from_scryfall(card_name):
+def fetch_card_image_from_scryfall(card_name):
+    # Create a directory for caching if it doesn't exist
+    cache_folder = "image_cache"
+    if not os.path.exists(cache_folder):
+        os.makedirs(cache_folder)
+
+    # Check if the image is already cached
+    cache_file_path = os.path.join(cache_folder, sanitize_filename(f"{card_name}.jpg"))
+    if os.path.exists(cache_file_path):
+        image = Image.open(cache_file_path)
+        photo_image = ImageTk.PhotoImage(image)
+        return photo_image
+
     api_url = f'https://api.scryfall.com/cards/named?exact={card_name}'
     try:
         response = requests.get(api_url)
 
         if response.status_code == 200:
             card_json = response.json()
-            print(card_json)
+            card_image_url = ''
             if 'image_uris' in card_json:
-                return card_json['image_uris']['normal']
+                card_image_url =  card_json['image_uris']['normal']
+            else:
+                card_image_url = card_json['card_faces'][0]['image_uris']['normal']
 
-            return card_json['card_faces'][0]['image_uris']['normal']
+            image, image_data = get_image_from_url(card_image_url)
+            with open(cache_file_path, 'wb') as f:
+                    f.write(image_data)
+            return image
 
         else:
             print(f"Failed to get card art. Status Code: {response}")
@@ -110,3 +132,20 @@ def fetch_card_image_url_from_scryfall(card_name):
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def sanitize_filename(filename):
+    # Remove invalid characters from the filename
+    sanitized_filename = re.sub(r'[\\/:"?*<>|]', '_', filename)
+    return sanitized_filename
+
+def get_image_from_url(url):
+        print(url)
+        try:
+            response = requests.get(url)
+            image_data = response.content
+            image = Image.open(BytesIO(image_data))
+            image = ImageTk.PhotoImage(image)
+            return image, image_data
+        except Exception as e:
+            print("Error loading image:", e)
+            return None
