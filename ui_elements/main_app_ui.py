@@ -84,6 +84,12 @@ class MainAppUI(tk.Tk):
         low_power_button = tk.Button(self, text="Sort decks by num creatures 2 or less power", command=self.sort_by_creatures_power_2_or_less)
         low_power_button.grid(row=7, column=0, pady=10, sticky='w')
 
+        artifact_count_button = tk.Button(self, text="Sort decks by Artifact count", command=self.sort_by_num_artifacts)
+        artifact_count_button.grid(row=8, column=0, pady=10, sticky='w')
+
+        draw_count_button = tk.Button(self, text="Sort decks by card draw", command=self.sort_by_draw_effects)
+        draw_count_button.grid(row=9, column=0, pady=10, sticky='w')
+
     def find_missing_shocks(self):
         decks_color_dict = self.deck_collection.get_deck_colors_map()
         decks_with_missing = []
@@ -114,6 +120,26 @@ class MainAppUI(tk.Tk):
                 return False
          
         sorted_decks = self.deck_collection.sort_decks_by_property(is_power_2_or_less)
+
+        self.deck_lister.list_decks_with_num(sorted_decks)
+
+    def sort_by_num_artifacts(self):
+        def is_artifact(card_info): 
+            if 'type_line' in card_info['card']:
+                return 'Artifact' in card_info['card']['type_line']
+            return False
+         
+        sorted_decks = self.deck_collection.sort_decks_by_property(is_artifact)
+
+        self.deck_lister.list_decks_with_num(sorted_decks)
+
+    def sort_by_draw_effects(self):
+        def is_draw(card_info): 
+            if 'oracle_text' in card_info['card']:
+                return 'Draw' in card_info['card']['oracle_text'] or 'draw' in card_info['card']['oracle_text']
+            return False
+         
+        sorted_decks = self.deck_collection.sort_decks_by_property(is_draw)
 
         self.deck_lister.list_decks_with_num(sorted_decks)
 
