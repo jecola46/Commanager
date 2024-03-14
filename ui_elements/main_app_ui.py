@@ -1,34 +1,21 @@
 import tkinter as tk
-from deck_collection import DeckCollection
 from ui_elements.card_stats import CardStats
 from ui_elements.deck_lister import DeckLister
 from deck_io import grab_decks_from_moxfield, load_decks_from_file, save_decks_to_file
 from deck_analysis_utils import is_missing_command_tower, is_missing_shock
 
 class MainAppUI(tk.Tk):
-    def __init__(self):
+    def __init__(self, deck_collection):
         super().__init__()
         self.title("MTG Deck Manager")
 
-        self.deck_collection = DeckCollection()
+        self.deck_collection = deck_collection
 
         self.create_widgets()
 
     def create_widgets(self):
-        label = tk.Label(self, text="Enter your Moxfield username:")
-        label.grid(row=0, column=0, pady=10, sticky='w')
-
-        self.username_entry = tk.Entry(self)
-        self.username_entry.grid(row=0, column=1, pady=10, sticky='w')
-
-        grab_button = tk.Button(self, text="Grab Decks", command=self.grab_decks)
-        grab_button.grid(row=1, column=0, columnspan=2, pady=10, sticky='w')
-
         save_button = tk.Button(self, text="Save Decks to File", command=self.save_decks)
         save_button.grid(row=2, column=0, columnspan=2, pady=10, sticky='w')
-
-        load_button = tk.Button(self, text="Load Decks from File", command=self.load_decks)
-        load_button.grid(row=3, column=0, columnspan=2, pady=10, sticky='w')
 
         list_decks_button = tk.Button(self, text="List Decks", command=self.list_decks)
         list_decks_button.grid(row=4, column=0, columnspan=2, pady=10, sticky='w')
@@ -86,18 +73,8 @@ class MainAppUI(tk.Tk):
         self.card_stats = CardStats(self, self.deck_collection)
         self.card_stats.grid(row=0, column=2, rowspan=5, padx=10, pady=10, sticky='nsew')
 
-    def grab_decks(self):
-        deck_summaries, deck_details = grab_decks_from_moxfield(self.username_entry.get())
-        self.deck_collection.set_deck_summaries(deck_summaries)
-        self.deck_collection.set_deck_details(deck_details)
-
     def save_decks(self):
         save_decks_to_file(self.deck_collection.get_deck_summaries(), self.deck_collection.get_deck_details())
-
-    def load_decks(self):
-        deck_summaries, deck_details = load_decks_from_file()
-        self.deck_collection.set_deck_summaries(deck_summaries)
-        self.deck_collection.set_deck_details(deck_details)
 
     def list_decks(self):
         self.deck_lister.destroy_widgets()

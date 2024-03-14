@@ -1,5 +1,6 @@
-from ui_elements.main_app_ui import MainAppUI
+from ui_elements.collection_loader import CollectionLoader
 
 if __name__ == "__main__":
-    app_ui = MainAppUI()
-    app_ui.mainloop()
+    collection_load = CollectionLoader()
+    collection_load.minsize(400, 400)
+    collection_load.mainloop()
