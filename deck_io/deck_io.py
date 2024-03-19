@@ -7,12 +7,13 @@ import re
 from PIL import Image, ImageTk
 from io import BytesIO
 
-def grab_decks_from_moxfield(username):
+def grab_decks_from_moxfield(username, update_loading_callback):
     """
     Fetches deck summaries and details from Moxfield API for a given username.
 
     Args:
     - username (str): The Moxfield username.
+    - update_loading_callback (function(str label, num percent_increase)):
 
     Returns:
     - Tuple: A tuple containing deck summaries and details.
@@ -27,6 +28,7 @@ def grab_decks_from_moxfield(username):
     }
 
     try:
+        update_loading_callback('Retreiving list of decks', 0)
         response = requests.get(api_url, headers=headers)
 
         if response.status_code == 200:
@@ -34,7 +36,10 @@ def grab_decks_from_moxfield(username):
 
             deck_summaries = decks_json['data']
             deck_details = {}
+            deck_num = 0
             for deck in deck_summaries:
+                deck_num += 1
+                update_loading_callback(f'({deck_num} / {len(deck_summaries)}) Retreiving deck: {deck["name"]} ', 100 / len(deck_summaries))
                 time.sleep(1)
                 deck_id = deck['publicId']
                 api_url = f"https://api.moxfield.com/v2/decks/all/{deck_id}"
