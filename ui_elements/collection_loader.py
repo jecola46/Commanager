@@ -83,7 +83,6 @@ class CollectionLoader(tk.Tk):
         deck_collection.set_deck_summaries(deck_summaries)
         deck_collection.set_deck_details(deck_details)
 
-        # Functionality to load decks from a known file
         # Destroy current frame
         self.destroy()
 
