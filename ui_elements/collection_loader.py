@@ -3,13 +3,11 @@ from tkinter import ttk
 from .main_app_ui import MainAppUI
 from deck_io import grab_decks_from_moxfield, load_decks_from_file
 from deck_collection import DeckCollection
-import time
 
 class CollectionLoader(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("MTG Deck Manager")
-
         self.create_widgets()
 
     def create_widgets(self):
@@ -21,9 +19,11 @@ class CollectionLoader(tk.Tk):
         welcome_label = tk.Label(self, text="Welcome to the Really Great MTG Tool", font=("Helvetica", 16)) 
         welcome_label.grid(row=0, column=0, columnspan=3, pady=10, sticky='ew')
 
+        # Parent frame for username entry, centers contents in column
         username_parent_frame = tk.Frame(self)
         username_parent_frame.grid(row=1, column=0, padx=10, sticky='ew')
 
+        # Child frame for username entry, packs contents together into small frame
         username_entry_frame = tk.Frame(username_parent_frame)
         username_entry_frame.pack(anchor=tk.CENTER)
 
@@ -38,13 +38,23 @@ class CollectionLoader(tk.Tk):
 
         ttk.Separator(self, orient='vertical').grid(column=1, row=1, rowspan=3, sticky='ns', pady=(0, 10))
 
-        # Divider with "or"
+        # "or" text written on top of the separator
         divider_label = tk.Label(self, text="or")
         divider_label.grid(row=1, column=1, rowspan=2, padx=10, pady=10)
 
         # Button to load decks from a known file
         load_file_button = tk.Button(self, text="Load Decks from File", command=self.load_decks_from_default_file, bg='light blue')
         load_file_button.grid(row=1, column=2, padx=40, pady=40, sticky='nsew')
+
+    def fetch_deck_info(self):
+        username = self.username_entry.get()
+
+        update_loading_callback = self.show_loading_screen("Fetching deck information...")
+
+        # Fetch deck information
+        deck_summaries, deck_details = grab_decks_from_moxfield(username, update_loading_callback)
+
+        self.replace_with_main_app(deck_summaries, deck_details)
 
     def show_loading_screen(self, text):
         # Create a transparent overlay
@@ -55,7 +65,7 @@ class CollectionLoader(tk.Tk):
         self.loading_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         # Create progress bar
-        self.progress_bar = ttk.Progressbar(self, mode='indeterminate')
+        self.progress_bar = ttk.Progressbar(self, mode='determinate')
         self.progress_bar.place(relx=0.5, rely=0.6, relwidth=0.5, anchor=tk.CENTER)
         self.update_idletasks()  # Update the GUI to show the label immediately
         def update_label(new_text, new_progress):
@@ -64,17 +74,6 @@ class CollectionLoader(tk.Tk):
             self.progress_bar.step(new_progress)
             self.progress_bar.update()
         return update_label
-
-    def fetch_deck_info(self):
-        username = self.username_entry.get()
-
-        # Show loading screen
-        update_loading_callback = self.show_loading_screen("Fetching deck information...")
-
-        # Fetch deck information
-        deck_summaries, deck_details = grab_decks_from_moxfield(username, update_loading_callback)
-
-        self.replace_with_main_app(deck_summaries, deck_details)
 
     def load_decks_from_default_file(self):
         self.replace_with_main_app(*load_decks_from_file())
