@@ -88,4 +88,6 @@ class CollectionLoader(tk.Tk):
 
         # Create and display MainAppUI
         main_app = MainAppUI(deck_collection)
+        main_app.minsize(600, 600)
+        main_app.geometry('1800x600')
         main_app.mainloop()
