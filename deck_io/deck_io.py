@@ -6,6 +6,7 @@ import os
 import re
 from PIL import Image, ImageTk
 from io import BytesIO
+from threading import Thread
 
 def grab_decks_from_moxfield(username, update_loading_callback):
     """
@@ -138,19 +139,76 @@ def fetch_card_image_from_scryfall(card_name):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def fetch_card_art_from_scryfall(card_name):
+    # Create a directory for caching if it doesn't exist
+    cache_folder = "image_cache"
+    if not os.path.exists(cache_folder):
+        os.makedirs(cache_folder)
+
+    # Check if the image is already cached
+    cache_file_path = os.path.join(cache_folder, sanitize_filename(f"{card_name}-art.jpg"))
+    if os.path.exists(cache_file_path):
+        image = Image.open(cache_file_path)
+        image = image.resize((212, 156))
+        photo_image = ImageTk.PhotoImage(image)
+        return photo_image, True
+
+    api_url = f'https://api.scryfall.com/cards/named?exact={card_name}'
+    try:
+        response = requests.get(api_url)
+
+        if response.status_code == 200:
+            card_json = response.json()
+            card_image_url = ''
+            if 'image_uris' in card_json:
+                card_image_url =  card_json['image_uris']['art_crop']
+            else:
+                card_image_url = card_json['card_faces'][0]['image_uris']['art_crop']
+
+            image, image_data = get_image_from_url(card_image_url, (212, 156))
+            with open(cache_file_path, 'wb') as f:
+                    f.write(image_data)
+            return image, False
+
+        else:
+            print(f"Failed to get card art. Status Code: {response}")
+            print(f"Failed to get card art. Status Code: {response.status_code}")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 def sanitize_filename(filename):
     # Remove invalid characters from the filename
     sanitized_filename = re.sub(r'[\\/:"?*<>|]', '_', filename)
     return sanitized_filename
 
-def get_image_from_url(url):
+def get_image_from_url(url, resize = None):
         print(url)
         try:
             response = requests.get(url)
             image_data = response.content
             image = Image.open(BytesIO(image_data))
+            if resize is not None:
+                image = image.resize(resize)
             image = ImageTk.PhotoImage(image)
             return image, image_data
         except Exception as e:
             print("Error loading image:", e)
             return None
+
+def grab_card_art_async(image_labels):
+    art_grab_thread = GetImageForLabels(image_labels)
+    art_grab_thread.start()
+
+class GetImageForLabels(Thread):
+    def __init__(self, image_labels):
+        super().__init__()
+        self.image_labels = image_labels
+
+    def run(self):
+        for image_label in self.image_labels:
+            image, from_cache = fetch_card_art_from_scryfall(image_label.card_art_name)
+            image_label.config(image=image)
+            image_label.image = image
+            if not from_cache:
+                time.sleep(1)
