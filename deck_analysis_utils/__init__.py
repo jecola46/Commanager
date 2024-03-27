@@ -1,1 +1,1 @@
-from .deck_analysis_utils import is_missing_command_tower, is_missing_shock
+from .deck_analysis_utils import is_missing_command_tower, is_missing_shock, DISPLAY_TO_INTERNAL_COLOR

@@ -36,3 +36,12 @@ def is_missing_command_tower(deck_collection, deck_id, colors):
         return True
 
     return False
+
+# Define a mapping between display colors and internal representation
+DISPLAY_TO_INTERNAL_COLOR = {
+    "White": "W",
+    "Blue": "U",
+    "Black": "B",
+    "Green": "G",
+    "Red": "R"
+}

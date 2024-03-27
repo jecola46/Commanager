@@ -1,6 +1,7 @@
 import tkinter as tk
 import math
 from .deck_lister import DeckLister
+from deck_analysis_utils import DISPLAY_TO_INTERNAL_COLOR
 
 class MainAppUI(tk.Tk):
     def __init__(self, deck_collection):
@@ -30,4 +31,41 @@ class MainAppUI(tk.Tk):
         self.deck_lister.configure(yscrollcommand=scrollbar.set)
 
     def create_filter_ui(self):
-        pass
+        # Define a dictionary to store the filter variables
+        self.filter_vars = {
+            "White": tk.BooleanVar(),
+            "Blue": tk.BooleanVar(),
+            "Black": tk.BooleanVar(),
+            "Green": tk.BooleanVar(),
+            "Red": tk.BooleanVar()
+        }
+
+        # Create filter labels and checkbuttons for each color
+        filter_frame = tk.Frame(self)
+        filter_frame.grid(row=1, column=0, padx=10, pady=10, sticky='n')
+
+        filter_label = tk.Label(filter_frame, text="Filter by Color", font=("Helvetica", 12, "bold"))
+        filter_label.pack(side=tk.TOP)
+
+        for color in self.filter_vars:
+            checkbutton = tk.Checkbutton(filter_frame, text=color, variable=self.filter_vars[color], command=self.apply_filters)
+            checkbutton.pack(anchor='w')
+
+    def apply_filters(self):
+        deck_list = self.deck_collection.get_deck_summaries()
+        deck_colors_map = self.deck_collection.get_deck_colors_map()
+
+        # Filter decks based on selected colors
+        filtered_decks = []
+        for deck in deck_list:
+            colors_set = set(deck_colors_map.get(deck.get('publicId', '')))
+            selected_colors = {DISPLAY_TO_INTERNAL_COLOR[color] for color, var in self.filter_vars.items() if var.get()}
+            if selected_colors.issubset(colors_set):
+                filtered_decks.append(deck)
+
+        self.update_deck_lister(filtered_decks)
+
+    def update_deck_lister(self, new_decks):
+        self.deck_lister.destroy()
+        self.deck_lister = DeckLister(self, new_decks, self.deck_collection)
+        self.deck_lister.grid(row=1, column=1, sticky='nsew')
