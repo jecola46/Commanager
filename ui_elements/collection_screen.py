@@ -23,6 +23,7 @@ class CollectionScreen(tk.Frame):
 
         deck_list = self.deck_collection.get_deck_summaries()
         self.deck_lister = DeckLister(self, deck_list, self.deck_collection)
+        self.displayed_decks = deck_list
         self.deck_lister.grid(row=1, column=1, sticky='nsew')
 
         # Add a scrollbar
@@ -68,9 +69,13 @@ class CollectionScreen(tk.Frame):
     def update_deck_lister(self, new_decks):
         self.deck_lister.destroy()
         self.deck_lister = DeckLister(self, new_decks, self.deck_collection)
+        self.displayed_decks = new_decks
         self.deck_lister.grid(row=1, column=1, sticky='nsew')
 
         self.deck_lister.configure(yscrollcommand=self.scrollbar.set)
         # Need these for some reason to get the scrollbar working correctly
         self.update_idletasks()
         self.deck_lister.update_things()
+
+    def show_deck_details(self, deck):
+        self.root.show_deck_details_screen(deck, self.displayed_decks)

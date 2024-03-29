@@ -1,5 +1,6 @@
 import tkinter as tk
 from .collection_screen import CollectionScreen
+from .deck_details_screen import DeckDetailsScreen
 
 class DeckManagerApp(tk.Tk):
     def __init__(self, deck_collection):
@@ -11,13 +12,17 @@ class DeckManagerApp(tk.Tk):
         self.create_main_frame()
 
     def create_main_frame(self):
-        self.main_frame = CollectionScreen(self, self.deck_collection)
-        self.main_frame.pack(fill="both", expand=True)
+        self.collection_frame = CollectionScreen(self, self.deck_collection)
+        self.collection_frame.pack(fill="both", expand=True)
 
-    def show_deck_details_screen(self, deck):
-        self.main_frame.destroy()  # Destroy the current main frame
-        self.create_deck_details_frame(deck)  # Create the deck details frame
+    def show_deck_details_screen(self, deck, deck_lists):
+        self.collection_frame.pack_forget()
+        self.create_deck_details_frame(deck, deck_lists)
 
-    def create_deck_details_frame(self, deck):
-        self.deck_details_frame = DeckDetailsScreen(self, deck)
+    def create_deck_details_frame(self, deck, deck_lists):
+        self.deck_details_frame = DeckDetailsScreen(self, self.deck_collection, deck, deck_lists)
         self.deck_details_frame.pack(fill="both", expand=True)
+
+    def show_main_frame(self):
+        self.deck_details_frame.destroy()
+        self.collection_frame.pack(fill="both", expand=True)

@@ -102,7 +102,7 @@ def save_decks_to_file(deck_summaries, deck_details, summary_filename='deck_summ
         with open(details_filename, 'w') as file:
             json.dump(deck_details, file)
 
-def fetch_card_image_from_scryfall(card_name):
+def fetch_card_image_from_scryfall(card_name, resize):
     # Create a directory for caching if it doesn't exist
     cache_folder = "image_cache"
     if not os.path.exists(cache_folder):
@@ -112,8 +112,9 @@ def fetch_card_image_from_scryfall(card_name):
     cache_file_path = os.path.join(cache_folder, sanitize_filename(f"{card_name}.jpg"))
     if os.path.exists(cache_file_path):
         image = Image.open(cache_file_path)
+        image = image.resize(resize)
         photo_image = ImageTk.PhotoImage(image)
-        return photo_image
+        return photo_image, True
 
     api_url = f'https://api.scryfall.com/cards/named?exact={card_name}'
     try:
@@ -127,10 +128,10 @@ def fetch_card_image_from_scryfall(card_name):
             else:
                 card_image_url = card_json['card_faces'][0]['image_uris']['normal']
 
-            image, image_data = get_image_from_url(card_image_url)
+            image, image_data = get_image_from_url(card_image_url, resize)
             with open(cache_file_path, 'wb') as f:
                     f.write(image_data)
-            return image
+            return image, False
 
         else:
             print(f"Failed to get card art. Status Code: {response}")
@@ -138,6 +139,27 @@ def fetch_card_image_from_scryfall(card_name):
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def grab_card_image_async(image_labels):
+    art_grab_thread = GetCardImageForLabels(image_labels)
+    art_grab_thread.start()
+
+class GetCardImageForLabels(Thread):
+    def __init__(self, image_labels):
+        super().__init__()
+        self.image_labels = image_labels
+
+    def run(self):
+        # Assume the first image label is the main one to display and should be larger
+        for i, image_label in enumerate(self.image_labels):
+            if i == 0:
+                image, from_cache = fetch_card_image_from_scryfall(image_label.card_name, (630, 880))
+            else:
+                image, from_cache = fetch_card_image_from_scryfall(image_label.card_name, (126, 176))
+            image_label.config(image=image)
+            image_label.image = image
+            if not from_cache:
+                time.sleep(1)
 
 def fetch_card_art_from_scryfall(card_name):
     # Create a directory for caching if it doesn't exist
@@ -177,6 +199,23 @@ def fetch_card_art_from_scryfall(card_name):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def grab_card_art_async(image_labels):
+    art_grab_thread = GetImageForLabels(image_labels)
+    art_grab_thread.start()
+
+class GetImageForLabels(Thread):
+    def __init__(self, image_labels):
+        super().__init__()
+        self.image_labels = image_labels
+
+    def run(self):
+        for image_label in self.image_labels:
+            image, from_cache = fetch_card_art_from_scryfall(image_label.card_art_name)
+            image_label.config(image=image)
+            image_label.image = image
+            if not from_cache:
+                time.sleep(1)
+
 def sanitize_filename(filename):
     # Remove invalid characters from the filename
     sanitized_filename = re.sub(r'[\\/:"?*<>|]', '_', filename)
@@ -195,20 +234,3 @@ def get_image_from_url(url, resize = None):
         except Exception as e:
             print("Error loading image:", e)
             return None
-
-def grab_card_art_async(image_labels):
-    art_grab_thread = GetImageForLabels(image_labels)
-    art_grab_thread.start()
-
-class GetImageForLabels(Thread):
-    def __init__(self, image_labels):
-        super().__init__()
-        self.image_labels = image_labels
-
-    def run(self):
-        for image_label in self.image_labels:
-            image, from_cache = fetch_card_art_from_scryfall(image_label.card_art_name)
-            image_label.config(image=image)
-            image_label.image = image
-            if not from_cache:
-                time.sleep(1)
