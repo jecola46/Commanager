@@ -26,9 +26,9 @@ class MainAppUI(tk.Tk):
         self.deck_lister.grid(row=1, column=1, sticky='nsew')
 
         # Add a scrollbar
-        scrollbar = tk.Scrollbar(self, orient="vertical", command=self.deck_lister.yview)
-        scrollbar.grid(row=1, column=2, sticky='ns')
-        self.deck_lister.configure(yscrollcommand=scrollbar.set)
+        self.scrollbar = tk.Scrollbar(self, orient="vertical", command=self.deck_lister.yview)
+        self.scrollbar.grid(row=1, column=2, sticky='ns')
+        self.deck_lister.configure(yscrollcommand=self.scrollbar.set)
 
     def create_filter_ui(self):
         # Define a dictionary to store the filter variables
@@ -69,3 +69,8 @@ class MainAppUI(tk.Tk):
         self.deck_lister.destroy()
         self.deck_lister = DeckLister(self, new_decks, self.deck_collection)
         self.deck_lister.grid(row=1, column=1, sticky='nsew')
+
+        self.deck_lister.configure(yscrollcommand=self.scrollbar.set)
+        # Need these for some reason to get the scrollbar working correctly
+        self.update_idletasks()
+        self.deck_lister.update_things()

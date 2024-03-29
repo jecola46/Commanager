@@ -16,7 +16,6 @@ class DeckLister(tk.Canvas):
         self.deck_image_labels = []
         
         self.bind_all("<MouseWheel>", self.on_mousewheel)
-        self.set_scrollbar()
 
         # Create a frame to contain the deck boxes
         deck_collection_frame = tk.Frame(self)
@@ -58,6 +57,7 @@ class DeckLister(tk.Canvas):
             deck_name_label = tk.Label(deck_box_frame, text=deck_name, font=("Helvetica", 12))
             deck_name_label.pack(side = tk.TOP, padx=2)
 
+        self.set_scrollbar()
         grab_card_art_async(self.deck_image_labels)
 
     def set_scrollbar(self):
@@ -67,5 +67,9 @@ class DeckLister(tk.Canvas):
     def on_canvas_configure(self, event):
         self.configure(scrollregion=self.bbox("all"))
 
+
     def on_mousewheel(self, event):
         self.yview_scroll(-1 * int(event.delta/120), "units")
+
+    def update_things(self):
+        self.configure(scrollregion=self.bbox("all"))
