@@ -13,6 +13,8 @@ class DeckLister(tk.Canvas):
         self.create_deck_collection()
 
     def create_deck_collection(self):
+        num_columns = 5
+
         self.deck_image_labels = []
         
         self.bind_all("<MouseWheel>", self.on_mousewheel)
@@ -23,7 +25,7 @@ class DeckLister(tk.Canvas):
 
         self.grid_rowconfigure(1, weight=1)
 
-        for column in range(0, 7):
+        for column in range(0, num_columns):
             deck_collection_frame.grid_columnconfigure(column, weight=1, uniform="group1")
 
         # Create a grid for displaying decks
@@ -31,8 +33,8 @@ class DeckLister(tk.Canvas):
             image_path = deck.get('local_image_path', 'resources\\no-photo.png')
 
             # Calculate row and column index
-            row = i // 7
-            column = i % 7
+            row = i // num_columns
+            column = i % num_columns
 
             # Load image and resize it to desired dimensions
             image = Image.open(image_path)
@@ -40,13 +42,13 @@ class DeckLister(tk.Canvas):
             photo = ImageTk.PhotoImage(image)
 
             deck_box_frame = tk.Frame(deck_collection_frame)
-            deck_box_frame.grid(row=row, column=column, padx=10, pady=5)
+            deck_box_frame.grid(row=row, column=column, pady=5)
 
             # Create label to display image
             deck_image_label = tk.Label(deck_box_frame, image=photo)
             deck_image_label.card_art_name = self.deck_collection.get_deck_commander_name(deck['publicId'])
             deck_image_label.image = photo  # Keep reference to avoid garbage collection
-            deck_image_label.pack(side = tk.TOP, padx=5)
+            deck_image_label.pack(side = tk.TOP, padx=50)
             self.deck_image_labels.append(deck_image_label)
 
             # Display deck name
