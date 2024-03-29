@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from .main_app_ui import MainAppUI
+from .deck_manager_app import DeckManagerApp
 from deck_io import grab_decks_from_moxfield, load_decks_from_file
 from deck_collection import DeckCollection
 
@@ -86,8 +86,7 @@ class CollectionLoader(tk.Tk):
         # Destroy current frame
         self.destroy()
 
-        # Create and display MainAppUI
-        main_app = MainAppUI(deck_collection)
-        main_app.minsize(600, 600)
-        main_app.geometry('1800x600')
-        main_app.mainloop()
+        deck_manager_app = DeckManagerApp(deck_collection)
+        deck_manager_app.minsize(600, 600)
+        deck_manager_app.geometry('1800x600')
+        deck_manager_app.mainloop()

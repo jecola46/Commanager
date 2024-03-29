@@ -6,7 +6,6 @@ class DeckLister(tk.Canvas):
     def __init__(self, root, deck_lists, deck_collection):
         super().__init__(root)
         self.root = root
-        self.root.title("Deck Viewer")
         self.deck_lists = deck_lists
         self.deck_collection = deck_collection
 
@@ -59,8 +58,14 @@ class DeckLister(tk.Canvas):
             deck_name_label = tk.Label(deck_box_frame, text=deck_name, font=("Helvetica", 12))
             deck_name_label.pack(side = tk.TOP, padx=2)
 
+            deck_image_label.bind("<Button-1>", lambda event, deck=deck: self.show_deck_details(deck))
+
+
         self.set_scrollbar()
         grab_card_art_async(self.deck_image_labels)
+
+    def show_deck_details(self, deck):
+        print(deck)
 
     def set_scrollbar(self):
         # Bind scrollbar to canvas

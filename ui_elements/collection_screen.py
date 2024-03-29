@@ -3,10 +3,10 @@ import math
 from .deck_lister import DeckLister
 from deck_analysis_utils import DISPLAY_TO_INTERNAL_COLOR
 
-class MainAppUI(tk.Tk):
-    def __init__(self, deck_collection):
-        super().__init__()
-        self.title("MTG Deck Manager")
+class CollectionScreen(tk.Frame):
+    def __init__(self, root, deck_collection):
+        super().__init__(root)
+        self.root = root
 
         self.deck_collection = deck_collection
 
