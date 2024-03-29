@@ -67,9 +67,16 @@ class DeckLister(tk.Canvas):
     def on_canvas_configure(self, event):
         self.configure(scrollregion=self.bbox("all"))
 
-
     def on_mousewheel(self, event):
-        self.yview_scroll(-1 * int(event.delta/120), "units")
+        # Get the dimensions of the canvas viewport
+        canvas_height = self.winfo_height()
+
+        # Get the dimensions of the scroll region
+        scroll_region = self.bbox("all")
+        scroll_height = scroll_region[3] - scroll_region[1]
+
+        if scroll_height > canvas_height:
+            self.yview_scroll(-1 * int(event.delta/120), "units")
 
     def update_things(self):
         self.configure(scrollregion=self.bbox("all"))
