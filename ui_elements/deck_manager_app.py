@@ -26,3 +26,7 @@ class DeckManagerApp(tk.Tk):
     def show_main_frame(self):
         self.deck_details_frame.destroy()
         self.collection_frame.pack(fill="both", expand=True)
+
+    def show_new_deck(self, deck, deck_lists):
+        self.deck_details_frame.destroy()
+        self.create_deck_details_frame(deck, deck_lists)

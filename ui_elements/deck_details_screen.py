@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from deck_io import grab_card_image_async
+from .deck_queue import DeckQueue
 
 class DeckDetailsScreen(tk.Frame):
     def __init__(self, root, deck_collection, deck, deck_list):
@@ -9,6 +10,7 @@ class DeckDetailsScreen(tk.Frame):
         self.deck_collection = deck_collection
         self.deck = deck
         self.deck_list = deck_list
+        self.deck_index = self.deck_list.index(self.deck)
 
         self.create_widgets()
 
@@ -39,11 +41,26 @@ class DeckDetailsScreen(tk.Frame):
         progression_button_frame = tk.Frame(self)
         progression_button_frame.grid(row=2, column=1, pady=10, sticky='ew')
 
-        previous_button = tk.Button(progression_button_frame, text='Previous', command=self.return_home)
-        previous_button.pack(side=tk.LEFT)
+        previous_button = tk.Button(progression_button_frame, text='Previous', height=2, width=10, command=self.previous_deck)
+        if self.deck_index == 0:
+            previous_button['state'] = tk.DISABLED
+        previous_button.config(font = ("Helvetica", 20))
+        previous_button.pack(side=tk.LEFT, padx='10')
 
-        next_button = tk.Button(progression_button_frame, text='Next', command=self.return_home)
-        next_button.pack(side=tk.LEFT)
+        next_button = tk.Button(progression_button_frame, text='Next', height=2, width=10, command=self.next_deck)
+        if self.deck_index == len(self.deck_list) - 1:
+            next_button['state'] = tk.DISABLED
+        next_button.config(font = ("Helvetica", 20))
+        next_button.pack(side=tk.RIGHT, padx='10')
+
+        deck_queue = DeckQueue(self, self.deck, self.deck_list)
+        deck_queue.grid(row=1, column=0, sticky='nsew')
+
+    def previous_deck(self):
+        self.root.show_new_deck(self.deck_list[self.deck_index - 1], self.deck_list)
+
+    def next_deck(self):
+        self.root.show_new_deck(self.deck_list[self.deck_index + 1], self.deck_list)
 
     def return_home(self):
         self.root.show_main_frame()
