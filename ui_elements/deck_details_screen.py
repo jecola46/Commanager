@@ -36,5 +36,14 @@ class DeckDetailsScreen(tk.Frame):
 
         grab_card_image_async(self.card_image_labels)
 
+        progression_button_frame = tk.Frame(self)
+        progression_button_frame.grid(row=2, column=1, pady=10, sticky='ew')
+
+        previous_button = tk.Button(progression_button_frame, text='Previous', command=self.return_home)
+        previous_button.pack(side=tk.LEFT)
+
+        next_button = tk.Button(progression_button_frame, text='Next', command=self.return_home)
+        next_button.pack(side=tk.LEFT)
+
     def return_home(self):
         self.root.show_main_frame()
