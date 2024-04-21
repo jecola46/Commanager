@@ -18,7 +18,9 @@ class DeckDetailsScreen(tk.Frame):
         home_button = tk.Button(self, text='Home', command=self.return_home)
         home_button.grid(row=0, column=0, pady=10)
 
-        deck_name_label = tk.Label(self, text=self.deck['name'], font=("Helvetica", 24))
+        deck_name = self.deck_collection.get_friendly_name_for_deck(self.deck)
+
+        deck_name_label = tk.Label(self, text=deck_name, font=("Helvetica", 24))
         deck_name_label.grid(row=0, column=1, pady=10, sticky='ew')
 
         self.card_image_labels = []

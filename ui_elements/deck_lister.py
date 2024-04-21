@@ -50,10 +50,7 @@ class DeckLister(tk.Canvas):
             deck_image_label.pack(side = tk.TOP, padx=50)
             self.deck_image_labels.append(deck_image_label)
 
-            # Display deck name
-            deck_name = deck.get('name', 'Unknown Deck').replace('[Owned]', '')
-            # Shorten long deck names
-            deck_name = (deck_name[:36] + '...') if len(deck_name) > 39 else deck_name
+            deck_name = self.deck_collection.get_friendly_name_for_deck(deck)
 
             deck_name_label = tk.Label(deck_box_frame, text=deck_name, font=("Helvetica", 12))
             deck_name_label.pack(side = tk.TOP, padx=2)

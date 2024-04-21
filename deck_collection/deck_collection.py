@@ -58,3 +58,9 @@ class DeckCollection:
 
         sorted_decks.sort(key=lambda x: x[1], reverse=True)
         return sorted_decks
+
+    def get_friendly_name_for_deck(self, deck):
+            # Display deck name
+            deck_name = deck.get('name', 'Unknown Deck').replace('[Owned]', '')
+            # Shorten long deck names
+            return (deck_name[:36] + '...') if len(deck_name) > 39 else deck_name
