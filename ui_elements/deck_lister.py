@@ -3,10 +3,10 @@ from PIL import Image, ImageTk
 from deck_io import grab_card_art_async
 
 class DeckLister(tk.Canvas):
-    def __init__(self, root, deck_lists, deck_collection):
+    def __init__(self, root, deck_info_lists, deck_collection):
         super().__init__(root)
         self.root = root
-        self.deck_lists = deck_lists
+        self.deck_info_lists = deck_info_lists
         self.deck_collection = deck_collection
 
         self.create_deck_collection()
@@ -28,7 +28,11 @@ class DeckLister(tk.Canvas):
             deck_collection_frame.grid_columnconfigure(column, weight=1, uniform="group1")
 
         # Create a grid for displaying decks
-        for i, deck in enumerate(self.deck_lists):
+        for i, deck in enumerate(self.deck_info_lists):
+            count = None
+            if isinstance(deck, tuple):
+                deck, count = deck
+
             image_path = deck.get('local_image_path', 'resources\\no-photo.png')
 
             # Calculate row and column index
@@ -50,7 +54,7 @@ class DeckLister(tk.Canvas):
             deck_image_label.pack(side = tk.TOP, padx=50)
             self.deck_image_labels.append(deck_image_label)
 
-            deck_name = self.deck_collection.get_friendly_name_for_deck(deck)
+            deck_name = self.deck_collection.get_friendly_name_for_deck(deck, prefix=str(count))
 
             deck_name_label = tk.Label(deck_box_frame, text=deck_name, font=("Helvetica", 12))
             deck_name_label.pack(side = tk.TOP, padx=2)
