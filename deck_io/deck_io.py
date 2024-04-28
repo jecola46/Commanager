@@ -161,7 +161,7 @@ class GetCardImageForLabels(Thread):
             if not from_cache:
                 time.sleep(1)
 
-def fetch_card_art_from_scryfall(card_name):
+def fetch_card_art_from_scryfall(card_name, resize = None):
     # Create a directory for caching if it doesn't exist
     cache_folder = "image_cache"
     if not os.path.exists(cache_folder):
@@ -171,7 +171,7 @@ def fetch_card_art_from_scryfall(card_name):
     cache_file_path = os.path.join(cache_folder, sanitize_filename(f"{card_name}-art.jpg"))
     if os.path.exists(cache_file_path):
         image = Image.open(cache_file_path)
-        image = image.resize((212, 156))
+        image = image.resize(resize)
         photo_image = ImageTk.PhotoImage(image)
         return photo_image, True
 
@@ -187,7 +187,7 @@ def fetch_card_art_from_scryfall(card_name):
             else:
                 card_image_url = card_json['card_faces'][0]['image_uris']['art_crop']
 
-            image, image_data = get_image_from_url(card_image_url, (212, 156))
+            image, image_data = get_image_from_url(card_image_url, resize)
             with open(cache_file_path, 'wb') as f:
                     f.write(image_data)
             return image, False
@@ -199,18 +199,19 @@ def fetch_card_art_from_scryfall(card_name):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def grab_card_art_async(image_labels):
-    art_grab_thread = GetImageForLabels(image_labels)
+def grab_card_art_async(image_labels, resize = None):
+    art_grab_thread = GetImageForLabels(image_labels, resize)
     art_grab_thread.start()
 
 class GetImageForLabels(Thread):
-    def __init__(self, image_labels):
+    def __init__(self, image_labels, resize = None):
         super().__init__()
         self.image_labels = image_labels
+        self.resize = resize
 
     def run(self):
         for image_label in self.image_labels:
-            image, from_cache = fetch_card_art_from_scryfall(image_label.card_art_name)
+            image, from_cache = fetch_card_art_from_scryfall(image_label.card_art_name, self.resize)
             image_label.config(image=image)
             image_label.image = image
             if not from_cache:

@@ -63,7 +63,7 @@ class DeckLister(tk.Canvas):
 
 
         self.set_scrollbar()
-        grab_card_art_async(self.deck_image_labels)
+        grab_card_art_async(self.deck_image_labels, resize=(212, 156))
 
     def set_scrollbar(self):
         # Bind scrollbar to canvas

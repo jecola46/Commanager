@@ -55,7 +55,7 @@ class DeckDetailsScreen(tk.Frame):
         next_button.config(font = ("Helvetica", 20))
         next_button.pack(side=tk.RIGHT, padx='10')
 
-        deck_queue = DeckQueue(self, self.deck, self.deck_list)
+        deck_queue = DeckQueue(self, self.deck_collection, self.deck, self.deck_list)
         deck_queue.grid(row=1, column=0, sticky='nsew')
 
     def previous_deck(self):
