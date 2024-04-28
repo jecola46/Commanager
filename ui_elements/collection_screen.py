@@ -2,6 +2,7 @@ import tkinter as tk
 import math
 from .deck_lister import DeckLister
 from deck_analysis_utils import DISPLAY_TO_INTERNAL_COLOR
+from deck_io import save_decks_to_file
 
 class CollectionScreen(tk.Frame):
     def __init__(self, root, deck_collection):
@@ -36,6 +37,7 @@ class CollectionScreen(tk.Frame):
         filter_and_sort_frame.grid(row=1, column=0, padx=10, pady=10, sticky='n')
         self.create_filter_ui(filter_and_sort_frame)
         self.create_sort_ui(filter_and_sort_frame)
+        self.create_save_and_stats_ui(filter_and_sort_frame)
 
     def create_filter_ui(self, root):
         # Define a dictionary to store the filter variables
@@ -130,3 +132,11 @@ class CollectionScreen(tk.Frame):
 
     def show_deck_details(self, deck):
         self.root.show_deck_details_screen(deck, self.displayed_decks)
+
+    def create_save_and_stats_ui(self, root): 
+        self.swap_user_button = tk.Button(root, text='Swap User Data', height=2, width=10, command=self.save_and_swap_collection, bg='red')
+        self.swap_user_button.pack(side=tk.BOTTOM)
+
+    def save_and_swap_collection(self):
+        save_decks_to_file(self.deck_collection.get_deck_summaries(), self.deck_collection.get_deck_details())
+        self.root.return_to_deck_loader()

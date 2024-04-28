@@ -30,3 +30,8 @@ class DeckManagerApp(tk.Tk):
     def show_new_deck(self, deck, deck_lists):
         self.deck_details_frame.destroy()
         self.create_deck_details_frame(deck, deck_lists)
+
+    def return_to_deck_loader(self):
+        self.collection_frame.destroy()
+        self.should_restart = True
+        self.destroy()

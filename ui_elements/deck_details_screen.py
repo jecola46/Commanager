@@ -55,6 +55,12 @@ class DeckDetailsScreen(tk.Frame):
         next_button.config(font = ("Helvetica", 20))
         next_button.pack(side=tk.RIGHT, padx='10')
 
+        deck_info_frame = tk.Frame(self)
+        deck_info_frame.grid(row=0, column=2, pady=10, sticky='ew', rowspan=2)
+
+        deck_description = tk.Label(deck_info_frame, text=self.deck_collection.get_deck_description(self.deck['publicId']), font=("Helvetica", 24), wraplength=600)
+        deck_description.pack(side=tk.TOP, padx='10')
+
         deck_queue = DeckQueue(self, self.deck_collection, self.deck, self.deck_list)
         deck_queue.grid(row=1, column=0, sticky='nsew')
 
