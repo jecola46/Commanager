@@ -54,7 +54,7 @@ class DeckLister(tk.Canvas):
             deck_image_label.pack(side = tk.TOP, padx=50)
             self.deck_image_labels.append(deck_image_label)
 
-            deck_name = self.deck_collection.get_friendly_name_for_deck(deck, prefix=str(count))
+            deck_name = self.deck_collection.get_friendly_name_for_deck(deck, prefix=str(count) if count is not None else None)
 
             deck_name_label = tk.Label(deck_box_frame, text=deck_name, font=("Helvetica", 12))
             deck_name_label.pack(side = tk.TOP, padx=2)
