@@ -56,10 +56,17 @@ class DeckDetailsScreen(tk.Frame):
         next_button.pack(side=tk.RIGHT, padx='10')
 
         deck_info_frame = tk.Frame(self)
-        deck_info_frame.grid(row=0, column=2, pady=10, sticky='ew', rowspan=2)
+        deck_info_frame.grid(row=0, column=2, pady=10, sticky='nsew', rowspan=2)
 
-        deck_description = tk.Label(deck_info_frame, text=self.deck_collection.get_deck_description(self.deck['publicId']), font=("Helvetica", 24), wraplength=600)
-        deck_description.pack(side=tk.TOP, padx='10')
+        deck_description = RoundedBorderLabel(deck_info_frame, text=self.deck_collection.get_deck_description(self.deck['publicId']), font=("Helvetica", 24), wraplength=600)
+        deck_description.pack(side=tk.TOP, padx=10, pady=(50, 10))
+
+        listbox = tk.Listbox(deck_info_frame)
+
+        for card in self.deck_collection.get_cards_in_deck(self.deck['publicId']):
+            listbox.insert(tk.END, card)
+
+        listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
         deck_queue = DeckQueue(self, self.deck_collection, self.deck, self.deck_list)
         deck_queue.grid(row=1, column=0, sticky='nsew')
@@ -72,3 +79,31 @@ class DeckDetailsScreen(tk.Frame):
 
     def return_home(self):
         self.root.show_main_frame()
+
+class RoundedBorderLabel(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        super().__init__(master)
+        self.configure(highlightbackground="black", highlightcolor="black", highlightthickness=0)
+
+        # Draw rounded rectangle border
+        self.canvas = tk.Canvas(self, highlightthickness=0)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        self.canvas.bind("<Configure>", self._on_canvas_configure)
+
+        self.label = tk.Label(self, **kwargs)
+        self.label.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+
+    def _on_canvas_configure(self, event=None):
+        self.canvas.delete("border")
+        x1, y1, x2, y2 = 0, 0, self.canvas.winfo_width(), self.canvas.winfo_height()
+        rounding_factor = 50
+        self.canvas.create_polygon(
+            x1, y1 + rounding_factor, x1, y1, x1 + rounding_factor, y1,  # Top left corner
+            x2 - rounding_factor, y1, x2, y1, x2, y1 + rounding_factor,  # Top right corner
+            x2, y2 - rounding_factor, x2, y2, x2 - rounding_factor, y2,  # Bottom right corner
+            x1 + rounding_factor, y2, x1, y2, x1, y2 - rounding_factor,  # Bottom left corner
+            fill="", outline="black", width=3, tag="border", smooth=True
+        )
+
+    def cget(self, key):
+        return self.label.cget(key)

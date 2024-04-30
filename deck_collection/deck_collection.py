@@ -73,3 +73,6 @@ class DeckCollection:
             deck_name = f'{prefix} {deck_name}'
         # Shorten long deck names
         return (deck_name[:36] + '...') if len(deck_name) > 39 else deck_name
+
+    def get_cards_in_deck(self, deck_id):
+        return self.deck_details[deck_id]['mainboard']
