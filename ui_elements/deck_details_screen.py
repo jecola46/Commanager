@@ -62,8 +62,10 @@ class DeckDetailsScreen(tk.Frame):
         deck_description.pack(side=tk.TOP, padx=10, pady=(50, 10))
 
         listbox = tk.Listbox(deck_info_frame)
+        cards = list(self.deck_collection.get_cards_in_deck(self.deck['publicId']).keys())
+        cards.sort()
 
-        for card in self.deck_collection.get_cards_in_deck(self.deck['publicId']):
+        for card in cards:
             listbox.insert(tk.END, card)
 
         listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
