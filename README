@@ -1,0 +1,10 @@
+This is a tool to help you manage your Magic: The Gathering
+
+Mock: https://www.figma.com/design/UXX0DBb6ORmVLz9XL8olxc/MTG-tool?node-id=0-1
+
+TODO:
+- install script (python package maanger)
+- run script (hot reloading pls)
+- refactor python.operator stuff
+- filter ANDing
+- save filters
