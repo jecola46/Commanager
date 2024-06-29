@@ -1,6 +1,7 @@
 import tkinter as tk
 from deck_io import save_decks_to_file
 from deck_analysis_utils import DISPLAY_TO_INTERNAL_COLOR
+from grammar import CustomSortRule
 
 class FilterAndSortPanel(tk.Frame):
     def __init__(self, root, deck_collection):
@@ -8,10 +9,6 @@ class FilterAndSortPanel(tk.Frame):
         self.root = root
         self.deck_collection = deck_collection
         self.creating_sort = False
-        self.secondary_dropdown_options = {
-            "Type line": ["contains", "does not contain"],
-            "Mana value is": ["equal to", "less than", "greater than"]
-        }
         self.create_filter_ui()
         self.create_sort_ui()
         self.create_save_and_stats_ui()
@@ -44,7 +41,7 @@ class FilterAndSortPanel(tk.Frame):
 
         self.add_sort_frame = tk.Frame(self)
         self.add_sort_button = tk.Button(self.add_sort_frame, text='+ Custom', height=2, width=10, command=self.add_sort, bg='blue')
-        self.add_sort_button.pack(anchor='w', padx=5, pady=5)
+        self.add_sort_button.grid(row=0, column=0, sticky='nsew')
         self.add_sort_frame.pack(anchor='w')
 
     def add_sort(self):
@@ -52,49 +49,63 @@ class FilterAndSortPanel(tk.Frame):
             return
         self.creating_sort = True
         menu_label = tk.Label(self.add_sort_frame, text="Sort by", font=("Helvetica", 12, "bold"))
-        menu_label.pack()
-        self.clicked = tk.StringVar()
-        drop = tk.OptionMenu(self.add_sort_frame, self.clicked, "Type line", "Mana value is")
-        drop.pack()
-        self.clicked.trace('w', self.sort_type_selected)
-        self.clicked.set("Type line")
+        menu_label.grid(row=1, column=0, sticky='nsew')
 
-        self.sort_text_box = tk.Entry(self.add_sort_frame)
-        self.sort_text_box.pack()
+        self.constructing_sort = CustomSortRule()
+        self.constructing_sort.clicked = tk.StringVar()
+
+        drop = tk.OptionMenu(self.add_sort_frame, self.constructing_sort.clicked, *self.constructing_sort.get_current_option_strings())
+        drop.grid(row=2, column=0, sticky='nsew')
+
+        def drop_callback(var, index, mode):
+            self.constructing_sort.choose_option(self.constructing_sort.clicked.get())
+            if self.constructing_sort.next is not None:
+                self.custom_sort_next_part(3, self.constructing_sort.next)
+
+        self.constructing_sort.clicked.trace('w', drop_callback)
+        self.constructing_sort.clicked.set("Type line")
 
         self.save_sort_button = tk.Button(self.add_sort_frame, text='Save', height=2, width=10, command=self.save_sort, bg='Green')
-        self.save_sort_button.pack()
+        self.save_sort_button.grid(row=10, column=0, sticky='nsew')
+
+    def custom_sort_next_part(self, row, rule_part):
+        if rule_part.is_text_entry():
+            self.sort_text_box = tk.Entry(self.add_sort_frame)
+            self.sort_text_box.grid(row=row, column=0, sticky='nsew')
+            rule_part.text_box = self.sort_text_box
+        else:
+            rule_part.clicked = tk.StringVar()
+
+            drop = tk.OptionMenu(self.add_sort_frame, rule_part.clicked, *rule_part.get_current_option_strings())
+            drop.grid(row=row, column=0, sticky='nsew')
+
+            def drop_callback(var, index, mode):
+                rule_part.choose_option(rule_part.clicked.get())
+                if rule_part.next is not None:
+                    self.custom_sort_next_part(row + 1, rule_part.next)
+
+            rule_part.clicked.trace('w', drop_callback)
+            rule_part.clicked.set("-")
+
 
     def save_sort(self):
         def custom_sort(card_item):
-            property_to_look_for = 'cmc'
-            if self.clicked.get() == "Type line":
-                property_to_look_for = 'type_line'
-            if 'card' in card_item and property_to_look_for in card_item['card']:
-                value = card_item['card'][property_to_look_for]
-                if property_to_look_for == 'cmc':
-                    if self.sort_type_clicked.get() == 'equal to':
-                        return int(value) == int(self.sort_text_box.get())
-                    elif self.sort_type_clicked.get() == 'less than':
-                        return int(value) < int(self.sort_text_box.get())
-                    else:
-                        return int(value) > int(self.sort_text_box.get())
-                else:
-                    if self.sort_type_clicked.get() == 'contains':
-                        return self.sort_text_box.get() in value
-                    else:
-                        return self.sort_text_box.get() not in value
-            return False
+            return self.constructing_sort.should_count_card(card_item)
         self.custom_sort = custom_sort
         self.filter_and_sort_decks()
 
     def sort_type_selected(self, *args):
-        print(self.clicked.get())
         self.sort_type_clicked = tk.StringVar()
-        options = self.secondary_dropdown_options[self.clicked.get()]
-        self.sort_type_clicked.set(options[0])
-        drop = tk.OptionMenu(self.add_sort_frame, self.sort_type_clicked, *options)
-        drop.pack()
+
+    def sort_by_custom(self, filtered_decks):
+        sorted_decks = []
+        for deck in filtered_decks:
+            public_id = deck.get('publicId', '')
+            count = self.deck_collection.count_cards_with_property(public_id, self.custom_sort)
+            sorted_decks.append((deck, count))
+
+        sorted_decks.sort(key=lambda x: x[1], reverse=True)
+        return sorted_decks
 
     def filter_and_sort_decks(self):
         filtered_decks = self.get_filtered_decks()
@@ -108,16 +119,6 @@ class FilterAndSortPanel(tk.Frame):
             
         else:
             self.root.update_deck_lister(self.get_filtered_decks())
-
-    def sort_by_custom(self, filtered_decks):
-        sorted_decks = []
-        for deck in filtered_decks:
-            public_id = deck.get('publicId', '')
-            count = self.deck_collection.count_cards_with_property(public_id, self.custom_sort)
-            sorted_decks.append((deck, count))
-
-        sorted_decks.sort(key=lambda x: x[1], reverse=True)
-        return sorted_decks
 
     def sort_by_outlaws(self):
         def is_outlaw(card_item):
