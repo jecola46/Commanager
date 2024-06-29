@@ -7,11 +7,13 @@ class SortRuleType(StrEnum):
         NOT_ENTERED = "-"
         TYPE_LINE = "Type line"
         MANA_VALUE = "Mana value is"
+        ORACLE_TEXT = "Oracle text"
 
 current_to_next_class_map = {
     "-": None,
     "Type line": StringComparision,
-    "Mana value is": NumericalComparision
+    "Mana value is": NumericalComparision,
+    "Oracle text": StringComparision
 }
 
 class CustomSortRule(RulePart):
@@ -31,3 +33,9 @@ class CustomSortRule(RulePart):
                 cmc = card_item['card']['cmc']
                 comparision_operator, to_compare = self.next.get_comparision()
                 return comparision_operator(cmc, to_compare)
+        elif self.current == "Oracle text":
+            if 'card' in card_item and 'oracle_text' in card_item['card']:
+                # Need 3 parts, the oracle text, the comparision operator and the value to compare
+                oracle_text = card_item['card']['oracle_text']
+                comparision_operator, to_compare = self.next.get_comparision()
+                return comparision_operator(oracle_text, to_compare)
