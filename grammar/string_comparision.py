@@ -20,7 +20,7 @@ class StringComparision(RulePart):
     def get_comparision(self):
         def compare(value_one, value_two):
             if self.current == "Contains":
-                return value_two in value_one
+                return value_two.lower() in value_one.lower()
             elif self.current == "Does not contain":
-                return value_two not in value_one
+                return value_two.lower() not in value_one.lower()
         return compare, self.next.get_value()
