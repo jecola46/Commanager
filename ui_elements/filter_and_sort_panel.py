@@ -39,44 +39,37 @@ class FilterAndSortPanel(tk.Frame):
         checkbutton = tk.Checkbutton(self, text='Sort by Outlaws', variable=self.outlaw_count_sort, command=self.filter_and_sort_decks)
         checkbutton.pack(anchor='w')
 
-        self.add_sort_frame = tk.Frame(self)
-        self.add_sort_button = tk.Button(self.add_sort_frame, text='+ Custom', height=2, width=10, command=self.add_sort, bg='blue')
-        self.add_sort_button.grid(row=0, column=0, sticky='nsew')
-        self.add_sort_frame.pack(anchor='w')
+        self.add_sort_button = tk.Button(self, text='+ Custom', height=2, width=10, command=self.add_custom_sort, bg='blue')
+        self.add_sort_button.pack(anchor='w')
 
-    def add_sort(self):
+    def add_custom_sort(self):
         if self.creating_sort:
             return
         self.creating_sort = True
-        menu_label = tk.Label(self.add_sort_frame, text="Sort by", font=("Helvetica", 12, "bold"))
-        menu_label.grid(row=1, column=0, sticky='nsew')
+        self.add_sort_frame = tk.Frame(self)
+        self.add_sort_frame.pack(anchor='w')
 
-        self.constructing_sort = CustomSortRule()
-        self.constructing_sort.clicked = tk.StringVar()
-
-        drop = tk.OptionMenu(self.add_sort_frame, self.constructing_sort.clicked, *self.constructing_sort.get_current_option_strings())
-        drop.grid(row=2, column=0, sticky='nsew')
-
-        def drop_callback(var, index, mode):
-            self.constructing_sort.choose_option(self.constructing_sort.clicked.get())
-            if self.constructing_sort.next is not None:
-                self.custom_sort_next_part(3, self.constructing_sort.next)
-
-        self.constructing_sort.clicked.trace('w', drop_callback)
-        self.constructing_sort.clicked.set("Type line")
+        self.customize_sort_frame = tk.Frame(self.add_sort_frame)
+        self.customize_sort_frame.grid(row=0, column=0, sticky='nsew')
 
         self.save_sort_button = tk.Button(self.add_sort_frame, text='Save', height=2, width=10, command=self.save_sort, bg='Green')
-        self.save_sort_button.grid(row=10, column=0, sticky='nsew')
+        self.save_sort_button.grid(row=1, column=0, sticky='nsew')
+
+        menu_label = tk.Label(self.customize_sort_frame, text="Sort by", font=("Helvetica", 12, "bold"))
+        menu_label.grid(row=0, column=0, sticky='nsew')
+
+        self.constructing_sort = CustomSortRule()
+        self.custom_sort_next_part(1, self.constructing_sort)
 
     def custom_sort_next_part(self, row, rule_part):
         if rule_part.is_text_entry():
-            self.sort_text_box = tk.Entry(self.add_sort_frame)
+            self.sort_text_box = tk.Entry(self.customize_sort_frame)
             self.sort_text_box.grid(row=row, column=0, sticky='nsew')
             rule_part.text_box = self.sort_text_box
         else:
             rule_part.clicked = tk.StringVar()
 
-            drop = tk.OptionMenu(self.add_sort_frame, rule_part.clicked, *rule_part.get_current_option_strings())
+            drop = tk.OptionMenu(self.customize_sort_frame, rule_part.clicked, *rule_part.get_current_option_strings())
             drop.grid(row=row, column=0, sticky='nsew')
 
             def drop_callback(var, index, mode):
