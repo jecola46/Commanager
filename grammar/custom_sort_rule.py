@@ -8,12 +8,16 @@ class SortRuleType(StrEnum):
         TYPE_LINE = "Type line"
         MANA_VALUE = "Mana value is"
         ORACLE_TEXT = "Oracle text"
+        POWER = "Power is"
+        TOUGHNESS = "Toughness is"
 
 current_to_next_class_map = {
     "-": None,
     "Type line": StringComparision,
     "Mana value is": NumericalComparision,
-    "Oracle text": StringComparision
+    "Oracle text": StringComparision,
+    "Power is": NumericalComparision,
+    "Toughness is": NumericalComparision
 }
 
 class CustomSortRule(RulePart):
@@ -39,3 +43,13 @@ class CustomSortRule(RulePart):
                 oracle_text = card_item['card']['oracle_text']
                 comparision_operator, to_compare = self.next.get_comparision()
                 return comparision_operator(oracle_text, to_compare)
+        elif self.current == "Power is":
+            if 'card' in card_item and 'power' in card_item['card']:
+                power = card_item['card']['power']
+                comparision_operator, to_compare = self.next.get_comparision()
+                return comparision_operator(power, to_compare)
+        elif self.current == "Toughness is":
+            if 'card' in card_item and 'toughness' in card_item['card']:
+                toughness = card_item['card']['toughness']
+                comparision_operator, to_compare = self.next.get_comparision()
+                return comparision_operator(toughness, to_compare)

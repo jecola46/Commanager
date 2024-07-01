@@ -21,11 +21,14 @@ class NumericalComparision(RulePart):
 
     def get_comparision(self):
         def compare(value_one, value_two):
-            if self.current == "Greater than":
-                return int(value_one) > int(value_two)
-            elif self.current == "Less than":
-                return int(value_one) < int(value_two)
-            elif self.current == "Equal to":
-                return int(value_one) == int(value_two)
+            try:
+                if self.current == "Greater than":
+                    return int(value_one) > int(value_two)
+                elif self.current == "Less than":
+                    return int(value_one) < int(value_two)
+                elif self.current == "Equal to":
+                    return int(value_one) == int(value_two)
+            except ValueError:
+                return False
 
         return compare, self.next.get_value()
