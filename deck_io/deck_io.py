@@ -80,7 +80,6 @@ def load_decks_from_file(summary_filename='deck_summaries.json', details_filenam
     deck_summaries = []
     deck_details = {}
     try:
-        print("load decks 1")
         with open(Path(summary_filename, 'r')) as file:
             deck_summaries = json.load(file)
         deck_summaries = deck_summaries
@@ -89,7 +88,6 @@ def load_decks_from_file(summary_filename='deck_summaries.json', details_filenam
         return []
 
     try:
-        print("load decks 2")
         with open(Path(details_filename, 'r')) as file:
             deck_details = json.load(file)
         deck_details = deck_details
