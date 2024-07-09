@@ -1,28 +1,37 @@
-from enum import StrEnum
+from enum import Enum
 from .rule_part import RulePart
 from .string_comparision import StringComparision
 from .numerical_comparision import NumericalComparision
 
-class SortRuleType(StrEnum):
-        NOT_ENTERED = "-"
-        TYPE_LINE = "Type line"
-        MANA_VALUE = "Mana value is"
-        ORACLE_TEXT = "Oracle text"
-        POWER = "Power is"
-        TOUGHNESS = "Toughness is"
+class SortRuleType(Enum):
+    NOT_ENTERED = 1
+    TYPE_LINE = 2
+    MANA_VALUE = 3
+    ORACLE_TEXT = 4
+    POWER = 5
+    TOUGHNESS = 6
+
+enum_to_display_string_map = {
+    1: "-",
+    2: "Type line",
+    3: "Mana value is",
+    4: "Oracle text",
+    5: "Power is",
+    6: "Toughness is"
+}
 
 current_to_next_class_map = {
-    "-": None,
-    "Type line": StringComparision,
-    "Mana value is": NumericalComparision,
-    "Oracle text": StringComparision,
-    "Power is": NumericalComparision,
-    "Toughness is": NumericalComparision
+    1: None,
+    2: StringComparision,
+    3: NumericalComparision,
+    4: StringComparision,
+    5: NumericalComparision,
+    6: NumericalComparision
 }
 
 class CustomSortRule(RulePart):
     def __init__(self):
-        super().__init__(SortRuleType, current_to_next_class_map)
+        super().__init__(SortRuleType, enum_to_display_string_map, current_to_next_class_map)
 
     def should_count_card(self, card_item):
         if self.current == "Type line":

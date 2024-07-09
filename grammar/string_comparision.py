@@ -1,21 +1,27 @@
-from enum import StrEnum
+from enum import Enum
 from .rule_part import RulePart
 from .entry_terminal import EntryTerminal
 
-class StringComparisionType(StrEnum):
-    NOT_ENTERED = "-"
-    CONTAINS = "Contains"
-    NOT_CONTAINS = "Does not contain"
+class StringComparisionType(Enum):
+    NOT_ENTERED = 1
+    CONTAINS = 2
+    NOT_CONTAINS = 3
+
+enum_to_display_string_map = {
+    1: "-",
+    2: "Contains",
+    3: "Does not contain"
+}
 
 current_to_next_class_map = {
-    "-": None,
-    "Contains": EntryTerminal,
-    "Does not contain": EntryTerminal
+    1: None,
+    2: EntryTerminal,
+    3: EntryTerminal
 }
 
 class StringComparision(RulePart):
     def __init__(self):
-        super().__init__(StringComparisionType, current_to_next_class_map)
+        super().__init__(StringComparisionType, enum_to_display_string_map, current_to_next_class_map)
 
     def get_comparision(self):
         def compare(value_one, value_two):
