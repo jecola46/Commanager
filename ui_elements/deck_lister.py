@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from deck_io import grab_card_art_async
+from pathlib import Path
 
 class DeckLister(tk.Canvas):
     def __init__(self, root, deck_info_lists, deck_collection):
@@ -33,7 +34,7 @@ class DeckLister(tk.Canvas):
             if isinstance(deck, tuple):
                 deck, count = deck
 
-            image_path = deck.get('local_image_path', 'resources\\no-photo.png')
+            image_path = deck.get('local_image_path', Path('resources/no-photo.png'))
 
             # Calculate row and column index
             row = i // num_columns
