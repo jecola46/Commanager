@@ -37,7 +37,7 @@ class DeckQueue(tk.Canvas):
             image_path = deck_in_list.get('local_image_path', Path('resources/no-photo.png'))
 
             # Load image and resize it to desired dimensions
-            image = Image.open(image_path)
+            image = Image.open(Path(image_path))
             image = image.resize((126, 176))
             photo = ImageTk.PhotoImage(image)
 

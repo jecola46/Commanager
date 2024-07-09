@@ -29,7 +29,7 @@ class DeckDetailsScreen(tk.Frame):
         image_path = self.deck.get('local_card_image_path', Path('resources/no-photo.png'))
 
         # Load image and resize it to desired dimensions
-        image = Image.open(image_path)
+        image = Image.open(Path(image_path))
         image = image.resize((630, 880))
         photo = ImageTk.PhotoImage(image)
 

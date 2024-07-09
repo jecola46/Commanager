@@ -41,7 +41,7 @@ class DeckLister(tk.Canvas):
             column = i % num_columns
 
             # Load image and resize it to desired dimensions
-            image = Image.open(image_path)
+            image = Image.open(Path(image_path))
             image = image.resize((212, 156))
             photo = ImageTk.PhotoImage(image)
 

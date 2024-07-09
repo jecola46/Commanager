@@ -7,6 +7,7 @@ import re
 from PIL import Image, ImageTk
 from io import BytesIO
 from threading import Thread
+from pathlib import Path
 
 def grab_decks_from_moxfield(username, update_loading_callback):
     """
@@ -79,7 +80,8 @@ def load_decks_from_file(summary_filename='deck_summaries.json', details_filenam
     deck_summaries = []
     deck_details = {}
     try:
-        with open(summary_filename, 'r') as file:
+        print("load decks 1")
+        with open(Path(summary_filename, 'r')) as file:
             deck_summaries = json.load(file)
         deck_summaries = deck_summaries
     except FileNotFoundError:
@@ -87,7 +89,8 @@ def load_decks_from_file(summary_filename='deck_summaries.json', details_filenam
         return []
 
     try:
-        with open(details_filename, 'r') as file:
+        print("load decks 2")
+        with open(Path(details_filename, 'r')) as file:
             deck_details = json.load(file)
         deck_details = deck_details
     except FileNotFoundError:
@@ -96,10 +99,11 @@ def load_decks_from_file(summary_filename='deck_summaries.json', details_filenam
     return deck_summaries, deck_details
 
 def save_decks_to_file(deck_summaries, deck_details, summary_filename='deck_summaries.json', details_filename='deck_details.json'):
-        with open(summary_filename, 'w') as file:
+        print("writing")
+        with open(Path(summary_filename, 'w')) as file:
             json.dump(deck_summaries, file)
 
-        with open(details_filename, 'w') as file:
+        with open(Path(details_filename, 'w')) as file:
             json.dump(deck_details, file)
 
 def fetch_card_image_from_scryfall(card_name, resize):
@@ -111,7 +115,7 @@ def fetch_card_image_from_scryfall(card_name, resize):
     # Check if the image is already cached
     cache_file_path = os.path.join(cache_folder, sanitize_filename(f"{card_name}.jpg"))
     if os.path.exists(cache_file_path):
-        image = Image.open(cache_file_path)
+        image = Image.open(Path(cache_file_path))
         image = image.resize(resize)
         photo_image = ImageTk.PhotoImage(image)
         return photo_image, True
@@ -129,7 +133,7 @@ def fetch_card_image_from_scryfall(card_name, resize):
                 card_image_url = card_json['card_faces'][0]['image_uris']['normal']
 
             image, image_data = get_image_from_url(card_image_url, resize)
-            with open(cache_file_path, 'wb') as f:
+            with open(Path(cache_file_path, 'wb')) as f:
                     f.write(image_data)
             return image, False
 
@@ -170,7 +174,7 @@ def fetch_card_art_from_scryfall(card_name, resize = None):
     # Check if the image is already cached
     cache_file_path = os.path.join(cache_folder, sanitize_filename(f"{card_name}-art.jpg"))
     if os.path.exists(cache_file_path):
-        image = Image.open(cache_file_path)
+        image = Image.open(Path(cache_file_path))
         image = image.resize(resize)
         photo_image = ImageTk.PhotoImage(image)
         return photo_image, True
@@ -188,7 +192,7 @@ def fetch_card_art_from_scryfall(card_name, resize = None):
                 card_image_url = card_json['card_faces'][0]['image_uris']['art_crop']
 
             image, image_data = get_image_from_url(card_image_url, resize)
-            with open(cache_file_path, 'wb') as f:
+            with open(Path(cache_file_path, 'wb')) as f:
                     f.write(image_data)
             return image, False
 
