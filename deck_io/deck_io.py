@@ -137,14 +137,15 @@ def save_decks_to_file(deck_summaries, deck_details):
 
 def fetch_card_image_from_scryfall(card_name, resize):
     # Create a directory for caching if it doesn't exist
-    cache_folder = "image_cache"
+    cache_folder = Path("image_cache")
     if not os.path.exists(cache_folder):
         os.makedirs(cache_folder)
 
     # Check if the image is already cached
-    cache_file_path = os.path.join(cache_folder, sanitize_filename(f"{card_name}.jpg"))
+    cache_file_path = cache_folder / sanitize_filename(f"{card_name}.jpg")
+
     if os.path.exists(cache_file_path):
-        image = Image.open(Path(cache_file_path))
+        image = Image.open(cache_file_path)
         image = image.resize(resize)
         photo_image = ImageTk.PhotoImage(image)
         return photo_image, True
@@ -162,13 +163,12 @@ def fetch_card_image_from_scryfall(card_name, resize):
                 card_image_url = card_json['card_faces'][0]['image_uris']['normal']
 
             image, image_data = get_image_from_url(card_image_url, resize)
-            with open(Path(cache_file_path, 'wb')) as f:
-                    f.write(image_data)
+
+            cache_file_path.write_bytes(image_data)
             return image, False
 
         else:
-            print(f"Failed to get card art. Status Code: {response}")
-            print(f"Failed to get card art. Status Code: {response.status_code}")
+            print(f"Failed to get card art. Response: {response} Status Code: {response.status_code}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -227,8 +227,7 @@ def fetch_card_art_from_scryfall(card_name, resize = None):
             return image, False
 
         else:
-            print(f"Failed to get card art. Status Code: {response}")
-            print(f"Failed to get card art. Status Code: {response.status_code}")
+            print(f"Failed to get card art. Response: {response} Status Code: {response.status_code}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
