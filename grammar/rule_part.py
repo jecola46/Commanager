@@ -15,12 +15,11 @@ class RulePart:
     def choose_option(self, choice):
         if choice not in self.get_current_option_strings():
             raise Exception(f'{choice} not in available current options {self.get_current_option_strings()}')
-        self.current = choice
-        index = list(self.enum_to_display_string_map.keys())[list(self.enum_to_display_string_map.values()).index(choice)]
-        if self.current_to_next_class_map[index] is None:
+        self.current = next(key for key, value in self.enum_to_display_string_map.items() if value == choice)
+        if self.current_to_next_class_map.get(self.current) is None:
             self.next = None
         else:
-            self.next = self.current_to_next_class_map[index]()
+            self.next = self.current_to_next_class_map[self.current]()
 
     def get_next_options(self):
         if self.next is None:
