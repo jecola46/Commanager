@@ -70,8 +70,7 @@ def grab_decks_from_moxfield(username, update_loading_callback):
             return deck_summaries, deck_details
 
         else:
-            print(f"Failed to fetch decks. Status Code: {response}")
-            print(f"Failed to fetch decks. Status Code: {response.status_code}")
+            print(f"Failed to get card art. Response: {response} Status Code: {response.status_code}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
