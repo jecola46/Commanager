@@ -9,6 +9,17 @@ from io import BytesIO
 from threading import Thread
 from pathlib import Path
 
+USER_DATA_ROOT = Path('user_data')
+
+def user_data_folder(username):
+    return USER_DATA_ROOT / username
+
+def deck_summary_file_path(username):
+    return USER_DATA_ROOT / username / 'deck_summaries.json'
+
+def deck_details_file_path(username):
+    return USER_DATA_ROOT / username / 'deck_details.json'
+        
 def grab_decks_from_moxfield(username, update_loading_callback):
     """
     Fetches deck summaries and details from Moxfield API for a given username.
@@ -65,47 +76,64 @@ def grab_decks_from_moxfield(username, update_loading_callback):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def load_decks_from_file(summary_filename='deck_summaries.json', details_filename='deck_details.json'):
+def load_decks_from_file(username):
     """
     Loads deck summaries and details from specified JSON files.
 
     Args:
-    - summary_filename (str): The filename for deck summaries JSON file (default is 'deck_summaries.json').
-    - details_filename (str): The filename for deck details JSON file (default is 'deck_details.json').
+    - username (str): The folder in which the deck_summaries.json and deck_details.json file are to be retrieved from.
 
     Returns:
     - Tuple: A tuple containing deck summaries and details.
       - deck_summaries (list): List of deck summaries loaded from the file.
       - deck_details (dict): Dictionary containing deck details loaded from the file.
 
-    If a file is not found, an empty list or dictionary is returned accordingly.
+    If data is not found, an empty list or dictionary is returned accordingly.
     """
+    if not username:
+        # This will happen when there's only one user saved ... for now, until COMM-22
+        # COMM-22: the username should be taken from the most_recent_user file and passed into here
+        saved_users = list(USER_DATA_ROOT.iterdir())
+        
+        if (len(saved_users) == 0):
+            print(f"No user data. Like, at all ...")
+            return []
+        
+        full_path = saved_users[0]
+        username = full_path.parts[-1]
+    elif not user_data_folder(username).is_dir():
+        print(f"No data for user '{username}'.")
+        return []
+    
     deck_summaries = []
     deck_details = {}
     try:
-        with open(Path(summary_filename, 'r')) as file:
-            deck_summaries = json.load(file)
-        deck_summaries = deck_summaries
+        # see existing folders and pick one, or save most recent
+        # can username ever be undefined?
+        raw_deck_summary = deck_summary_file_path(username).read_text()
+        deck_summaries = json.loads(raw_deck_summary)
     except FileNotFoundError:
-        print(f"File '{summary_filename}' not found.")
+        # Needs to be tested with pathlib -- COMM-23
+        print(f"File '{deck_summary_file_path(username)}' not found.")
         return []
 
     try:
-        with open(Path(details_filename, 'r')) as file:
-            deck_details = json.load(file)
-        deck_details = deck_details
+        raw_deck_details = deck_details_file_path(username).read_text()
+        deck_details = json.loads(raw_deck_details)
     except FileNotFoundError:
-        print(f"File '{details_filename}' not found.")
+        # Needs to be tested with pathlib -- COMM-23
+        print(f"File '{deck_details_file_path(username)}' not found.")
         return []
     return deck_summaries, deck_details
 
-def save_decks_to_file(deck_summaries, deck_details, summary_filename='deck_summaries.json', details_filename='deck_details.json'):
-        print("writing")
-        with open(Path(summary_filename, 'w')) as file:
-            json.dump(deck_summaries, file)
-
-        with open(Path(details_filename, 'w')) as file:
-            json.dump(deck_details, file)
+def save_decks_to_file(deck_summaries, deck_details):
+    username = deck_summaries[0]['createdByUser']['userName']
+    
+    if not user_data_folder(username).is_dir():
+        user_data_folder(username).mkdir()
+        
+    deck_summary_file_path(username).write_text(json.dumps(deck_summaries))   
+    deck_details_file_path(username).write_text(json.dumps(deck_details))
 
 def fetch_card_image_from_scryfall(card_name, resize):
     # Create a directory for caching if it doesn't exist

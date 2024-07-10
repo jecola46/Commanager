@@ -79,7 +79,12 @@ class CollectionLoader(tk.Tk):
         return update_label
 
     def load_decks_from_default_file(self):
-        self.replace_with_main_app(*load_decks_from_file())
+        username = self.username_entry.get()  
+        # This will be None in most cases, in which the first directory in user_data found will be chosen to read from
+        # COMM-22: instead of `self.username_entry.get()`, read from the most_recent_user file!!
+        # COMM-24: give user a dropdown of saved users and then use the selected username
+        
+        self.replace_with_main_app(*load_decks_from_file(username))
 
     def replace_with_main_app(self, deck_summaries, deck_details):
         deck_collection = DeckCollection()

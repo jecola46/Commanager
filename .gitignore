@@ -13,3 +13,6 @@ venv/
 
 # Ignore image caching
 image_cache/*
+
+# Ignore user data
+user_data/*
