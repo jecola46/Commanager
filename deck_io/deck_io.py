@@ -35,8 +35,11 @@ def grab_decks_from_moxfield(username, update_loading_callback):
 
         if response.status_code == 200:
             decks_json = response.json()
+            
+            def is_legal_commander_deck(deck_summary):
+                return deck_summary['format'] == 'commander' and deck_summary['isLegal']
 
-            deck_summaries = decks_json['data']
+            deck_summaries = list(filter(is_legal_commander_deck, decks_json['data']))
             deck_details = {}
             deck_num = 0
             for deck in deck_summaries:
@@ -165,14 +168,15 @@ class GetCardImageForLabels(Thread):
 
 def fetch_card_art_from_scryfall(card_name, resize = None):
     # Create a directory for caching if it doesn't exist
-    cache_folder = "image_cache"
+    cache_folder = Path("image_cache")
     if not os.path.exists(cache_folder):
         os.makedirs(cache_folder)
 
     # Check if the image is already cached
-    cache_file_path = os.path.join(cache_folder, sanitize_filename(f"{card_name}-art.jpg"))
+    cache_file_path = cache_folder / sanitize_filename(f"{card_name}-art.jpg")  # Join file paths, PathLib uses a cute operator
+    
     if os.path.exists(cache_file_path):
-        image = Image.open(Path(cache_file_path))
+        image = Image.open(cache_file_path)
         image = image.resize(resize)
         photo_image = ImageTk.PhotoImage(image)
         return photo_image, True
@@ -190,8 +194,8 @@ def fetch_card_art_from_scryfall(card_name, resize = None):
                 card_image_url = card_json['card_faces'][0]['image_uris']['art_crop']
 
             image, image_data = get_image_from_url(card_image_url, resize)
-            with open(Path(cache_file_path, 'wb')) as f:
-                    f.write(image_data)
+            
+            cache_file_path.write_bytes(image_data)
             return image, False
 
         else:
