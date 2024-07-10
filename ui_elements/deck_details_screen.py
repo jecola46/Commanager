@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from deck_io import grab_card_image_async
 from .deck_queue import DeckQueue
+from pathlib import Path
 
 class DeckDetailsScreen(tk.Frame):
     def __init__(self, root, deck_collection, deck, deck_list):
@@ -24,10 +25,11 @@ class DeckDetailsScreen(tk.Frame):
         deck_name_label.grid(row=0, column=1, pady=10, sticky='ew')
 
         self.card_image_labels = []
-        image_path = self.deck.get('local_card_image_path', 'resources\\no-photo.png')
+
+        image_path = self.deck.get('local_card_image_path', Path('resources/no-photo.png'))
 
         # Load image and resize it to desired dimensions
-        image = Image.open(image_path)
+        image = Image.open(Path(image_path))
         image = image.resize((630, 880))
         photo = ImageTk.PhotoImage(image)
 

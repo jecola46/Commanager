@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from deck_io import grab_card_art_async
+from pathlib import Path
 
 class DeckQueue(tk.Canvas):
     def __init__(self, root, deck_collection, deck, deck_lists):
@@ -33,10 +34,10 @@ class DeckQueue(tk.Canvas):
 
         for i in range(start_index, end_index):
             deck_in_list = self.deck_lists[i]
-            image_path = deck_in_list.get('local_image_path', 'resources\\no-photo.png')
+            image_path = deck_in_list.get('local_image_path', Path('resources/no-photo.png'))
 
             # Load image and resize it to desired dimensions
-            image = Image.open(image_path)
+            image = Image.open(Path(image_path))
             image = image.resize((126, 176))
             photo = ImageTk.PhotoImage(image)
 

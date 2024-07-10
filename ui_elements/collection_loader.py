@@ -35,6 +35,7 @@ class CollectionLoader(tk.Tk):
 
         fetch_button = tk.Button(username_entry_frame, text="Submit", command=self.fetch_deck_info)
         fetch_button.pack(side = tk.LEFT)
+        self.bind('<Return>', self.fetch_deck_info)  # let the user submit on pressing the `Enter` key
 
         ttk.Separator(self, orient='vertical').grid(column=1, row=1, rowspan=3, sticky='ns', pady=(0, 10))
 
@@ -46,7 +47,9 @@ class CollectionLoader(tk.Tk):
         load_file_button = tk.Button(self, text="Load Decks from File", command=self.load_decks_from_default_file, bg='light blue')
         load_file_button.grid(row=1, column=2, padx=40, pady=40, sticky='nsew')
 
-    def fetch_deck_info(self):
+    def fetch_deck_info(self, event=None):
+        # bind(), used to register the `Enter` keypress, passes in `event` as an argument to the callback`. 
+        # However, Button(), the UI button, does not. So, we're just accounting for both cases
         username = self.username_entry.get()
 
         update_loading_callback = self.show_loading_screen("Fetching deck information...")
