@@ -10,6 +10,7 @@ from threading import Thread
 from pathlib import Path
 
 USER_DATA_ROOT = Path('user_data')
+MOST_RECENT_USER_FILE = USER_DATA_ROOT / 'most_recent_user.txt'
 
 def user_data_folder(username):
     return USER_DATA_ROOT / username
@@ -89,18 +90,7 @@ def load_decks_from_file(username):
 
     If data is not found, an empty list or dictionary is returned accordingly.
     """
-    if not username:
-        # This will happen when there's only one user saved ... for now, until COMM-22
-        # COMM-22: the username should be taken from the most_recent_user file and passed into here
-        saved_users = list(USER_DATA_ROOT.iterdir())
-        
-        if (len(saved_users) == 0):
-            print(f"No user data. Like, at all ...")
-            return []
-        
-        full_path = saved_users[0]
-        username = full_path.parts[-1]
-    elif not user_data_folder(username).is_dir():
+    if not user_data_folder(username).is_dir():
         print(f"No data for user '{username}'.")
         return []
     

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from .deck_manager_app import DeckManagerApp
-from deck_io import grab_decks_from_moxfield, load_decks_from_file
+from deck_io import grab_decks_from_moxfield, load_decks_from_file, MOST_RECENT_USER_FILE
 from deck_collection import DeckCollection
 
 class CollectionLoader(tk.Tk):
@@ -49,8 +49,11 @@ class CollectionLoader(tk.Tk):
 
     def fetch_deck_info(self, event=None):
         # bind(), used to register the `Enter` keypress, passes in `event` as an argument to the callback`. 
-        # However, Button(), the UI button, does not. So, we're just accounting for both cases
+        # However, Button(), the UI button, does not. So, we're just accounting for both cases.
         username = self.username_entry.get()
+        
+        # This overwrites, not appends
+        MOST_RECENT_USER_FILE.write_text(username + '\n', encoding="utf-8")
 
         update_loading_callback = self.show_loading_screen("Fetching deck information...")
 
@@ -79,9 +82,7 @@ class CollectionLoader(tk.Tk):
         return update_label
 
     def load_decks_from_default_file(self):
-        username = self.username_entry.get()  
-        # This will be None in most cases, in which the first directory in user_data found will be chosen to read from
-        # COMM-22: instead of `self.username_entry.get()`, read from the most_recent_user file!!
+        username = MOST_RECENT_USER_FILE.read_text(encoding="utf-8").strip()
         # COMM-24: give user a dropdown of saved users and then use the selected username
         
         self.replace_with_main_app(*load_decks_from_file(username))
