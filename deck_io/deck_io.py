@@ -27,7 +27,8 @@ def grab_decks_from_moxfield(username, update_loading_callback):
 
     Args:
     - username (str): The Moxfield username.
-    - update_loading_callback (function(str label, num percent_increase)):
+    - update_loading_callback (function(str label, num percent_increase)): A callback to update loading bar.
+    Takes a label for the ongoing work and a percentage to increase loading bar.
 
     Returns:
     - Tuple: A tuple containing deck summaries and details.
@@ -76,14 +77,14 @@ def grab_decks_from_moxfield(username, update_loading_callback):
             return deck_summaries, deck_details
 
         else:
-            print(f"Failed to get card art. Response: {response} Status Code: {response.status_code}")
+            print(f"Failed to get user decks. Response: {response} Status Code: {response.status_code}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
 
 def load_decks_from_file(username):
     """
-    Loads deck summaries and details from specified JSON files.
+    Loads deck summaries and details for a specific user.
 
     Args:
     - username (str): The folder in which the deck_summaries.json and deck_details.json file are to be retrieved from.
@@ -121,6 +122,13 @@ def load_decks_from_file(username):
     return deck_summaries, deck_details
 
 def save_decks_to_file(deck_summaries, deck_details):
+    """
+    Saves deck summaries and deck details to users folder.
+
+    Args:
+    - deck_summaries (list): List of deck summaries for user.
+    - deck_details (dict): Dictionary containing deck details for user.
+    """
     username = deck_summaries[0]['createdByUser']['userName']
     
     if not user_data_folder(username).is_dir():
@@ -130,13 +138,25 @@ def save_decks_to_file(deck_summaries, deck_details):
     deck_details_file_path(username).write_text(json.dumps(deck_details))
 
 def fetch_card_image_from_scryfall(card_name, resize):
+    """
+    Fetches the given card image from scryfall, with optional resize.
+
+    Args:
+    - card_name (str): Card name to fetch.
+    - resize (tuple(width, height)): A tuple containing the desired (width, height) to which the image will be resized.
+
+    Returns:
+    - Tuple: a Tuple containing the desired image and whether or not that image came from the cache.
+        - image (ImageTK.PhotoImage): The desired image.
+        - from_cache (bool): Whether or not the image came from the cache.
+    """
     # Create a directory for caching if it doesn't exist
     cache_folder = Path("image_cache")
     if not os.path.exists(cache_folder):
         os.makedirs(cache_folder)
 
     # Check if the image is already cached
-    cache_file_path = cache_folder / sanitize_filename(f"{card_name}.jpg")
+    cache_file_path = cache_folder / sanitize_filename(f'{card_name}.jpg')
 
     if os.path.exists(cache_file_path):
         image = Image.open(cache_file_path)
