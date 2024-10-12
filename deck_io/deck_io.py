@@ -51,7 +51,12 @@ def grab_decks_from_moxfield(username, update_loading_callback):
             def is_legal_commander_deck(deck_summary):
                 return deck_summary['format'] == 'commander' and deck_summary['isLegal']
 
+            def is_illegal_commander_deck(deck_summary):
+                return deck_summary['format'] == 'commander' and not deck_summary['isLegal']
+
             deck_summaries = list(filter(is_legal_commander_deck, decks_json['data']))
+            illegal_deck_summaries = list(filter(is_illegal_commander_deck, decks_json['data']))
+            print(f'Illegal commander decks are {list(map(lambda summary: summary["name"], illegal_deck_summaries))}')
             deck_details = {}
             deck_num = 0
             for deck in deck_summaries:
