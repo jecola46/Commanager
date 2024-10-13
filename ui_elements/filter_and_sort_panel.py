@@ -1,6 +1,7 @@
 import tkinter as tk
 from deck_io import save_decks_to_file
 from deck_analysis_utils import DISPLAY_TO_INTERNAL_COLOR
+from deck_io.deck_io import load_custom_filters
 from grammar import CustomSortRule
 
 class FilterAndSortPanel(tk.Frame):
@@ -9,6 +10,8 @@ class FilterAndSortPanel(tk.Frame):
         self.root = root
         self.deck_collection = deck_collection
         self.creating_sort = False
+        self.sort_vars = {}
+        self.individual_card_sort_functions = {}
         self.create_filter_ui()
         self.create_sort_ui()
         self.create_save_and_stats_ui()
@@ -35,9 +38,14 @@ class FilterAndSortPanel(tk.Frame):
         sort_label = tk.Label(self, text="Sort by Property", font=("Helvetica", 12, "bold"))
         sort_label.pack(side=tk.TOP)
 
-        self.outlaw_count_sort = tk.BooleanVar()
-        checkbutton = tk.Checkbutton(self, text='Sort by Outlaws', variable=self.outlaw_count_sort, command=self.filter_and_sort_decks)
-        checkbutton.pack(anchor='w')
+        card_filters = load_custom_filters(self.deck_collection.get_user())
+        for filter in card_filters:
+            filter_name = filter['name']
+            filter_var = tk.BooleanVar()
+            checkbutton = tk.Checkbutton(self, text=filter_name, variable=filter_var, command=self.filter_and_sort_decks)
+            checkbutton.pack(anchor='w')
+            self.sort_vars[filter_name] = filter_var
+            self.individual_card_sort_functions[filter_name] = filter['function']
 
         self.add_sort_button = tk.Button(self, text='+ Custom', height=2, width=10, command=self.add_custom_sort, bg='blue')
         self.add_sort_button.pack(anchor='w')
@@ -99,12 +107,23 @@ class FilterAndSortPanel(tk.Frame):
 
         sorted_decks.sort(key=lambda x: x[1], reverse=True)
         return sorted_decks
+    
+    def sort_by_custom_card_filter(self, filtered_decks, filter):
+        sorted_decks = []
+        for deck in filtered_decks:
+            public_id = deck.get('publicId', '')
+            count = self.deck_collection.count_cards_with_property(public_id, filter)
+            sorted_decks.append((deck, count))
+
+        sorted_decks.sort(key=lambda x: x[1], reverse=True)
+        return sorted_decks
 
     def filter_and_sort_decks(self):
         filtered_decks = self.get_filtered_decks()
         if self.is_sorting_enabled():
-            if self.outlaw_count_sort.get():
-                sorted_decks = self.sort_by_outlaws()
+            custom_sort_name = self.get_first_checked_sort()
+            if custom_sort_name is not None:
+                sorted_decks = self.sort_by_custom_card_filter(filtered_decks, self.individual_card_sort_functions[custom_sort_name])
                 self.root.update_deck_lister_with_count(sorted_decks)
             else:
                 sorted_decks = self.sort_by_custom(filtered_decks)
@@ -113,26 +132,14 @@ class FilterAndSortPanel(tk.Frame):
         else:
             self.root.update_deck_lister(self.get_filtered_decks())
 
-    def sort_by_outlaws(self):
-        def is_outlaw(card_item):
-            if 'card' in card_item and 'type_line' in card_item['card']:
-                type_line = card_item['card']['type_line']
-                return "Assassin" in type_line or "Mercenary" in type_line or "Pirate" in type_line or "Rogue" in type_line or "Warlock" in type_line
-            return False
-
-        if self.outlaw_count_sort.get():
-            filtered_decks = self.get_filtered_decks()
-            sorted_decks = []
-            for deck in filtered_decks:
-                public_id = deck.get('publicId', '')
-                count = self.deck_collection.count_cards_with_property(public_id, is_outlaw)
-                sorted_decks.append((deck, count))
-
-            sorted_decks.sort(key=lambda x: x[1], reverse=True)
-            return sorted_decks
+    def get_first_checked_sort(self):
+        for sort_var_name in self.sort_vars.keys():
+            if self.sort_vars[sort_var_name].get():
+                return sort_var_name
+        return None
 
     def is_sorting_enabled(self):
-        return self.outlaw_count_sort is not None and self.outlaw_count_sort.get() or self.custom_sort is not None
+        return self.get_first_checked_sort() is not None or  self.custom_sort is not None
 
     def get_filtered_decks(self):
         deck_list = self.deck_collection.get_deck_summaries()

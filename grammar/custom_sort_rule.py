@@ -35,30 +35,30 @@ class CustomSortRule(RulePart):
 
     def should_count_card(self, card_item):
         if self.current == CustomSortRule.SortRuleType.TYPE_LINE:
-            if 'card' in card_item and 'type_line' in card_item['card']:
+            if 'type_line' in card_item:
                 # Need 3 parts, this type line, the comparision operator and the value to compare
-                type_line = card_item['card']['type_line']
+                type_line = card_item['type_line']
                 comparision_operator, to_compare = self.next.get_comparision()
                 return comparision_operator(type_line, to_compare)
         elif self.current == CustomSortRule.SortRuleType.MANA_VALUE:
-            if 'card' in card_item and 'cmc' in card_item['card']:
+            if 'cmc' in card_item:
                 # Need 3 parts, the cmc, the comparision operator and the value to compare
-                cmc = card_item['card']['cmc']
+                cmc = card_item['cmc']
                 comparision_operator, to_compare = self.next.get_comparision()
                 return comparision_operator(cmc, to_compare)
         elif self.current == CustomSortRule.SortRuleType.ORACLE_TEXT:
-            if 'card' in card_item and 'oracle_text' in card_item['card']:
+            if 'oracle_text' in card_item:
                 # Need 3 parts, the oracle text, the comparision operator and the value to compare
-                oracle_text = card_item['card']['oracle_text']
+                oracle_text = card_item['oracle_text']
                 comparision_operator, to_compare = self.next.get_comparision()
                 return comparision_operator(oracle_text, to_compare)
         elif self.current == CustomSortRule.SortRuleType.POWER:
-            if 'card' in card_item and 'power' in card_item['card']:
-                power = card_item['card']['power']
+            if 'power' in card_item:
+                power = card_item['power']
                 comparision_operator, to_compare = self.next.get_comparision()
                 return comparision_operator(power, to_compare)
         elif self.current == CustomSortRule.SortRuleType.TOUGHNESS:
-            if 'card' in card_item and 'toughness' in card_item['card']:
-                toughness = card_item['card']['toughness']
+            if 'toughness' in card_item:
+                toughness = card_item['toughness']
                 comparision_operator, to_compare = self.next.get_comparision()
                 return comparision_operator(toughness, to_compare)

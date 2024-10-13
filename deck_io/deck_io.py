@@ -8,6 +8,7 @@ from PIL import Image, ImageTk
 from io import BytesIO
 from threading import Thread
 from pathlib import Path
+from grammar import create_filter_from_string
 
 USER_DATA_ROOT = Path('user_data')
 MOST_RECENT_USER_FILE = USER_DATA_ROOT / 'most_recent_user.txt'
@@ -20,6 +21,9 @@ def deck_summary_file_path(username):
 
 def deck_details_file_path(username):
     return USER_DATA_ROOT / username / 'deck_details.json'
+
+def custom_filters_file_path(username):
+    return USER_DATA_ROOT / username / 'custom_filters.json'
         
 def grab_decks_from_moxfield(username, update_loading_callback):
     """
@@ -282,3 +286,12 @@ def get_image_from_url(url, resize = None):
         except Exception as e:
             print("Error loading image:", e)
             return None
+        
+def load_custom_filters(username):
+    filters_file = custom_filters_file_path(username)
+    if not filters_file.exists():
+        return []
+    custom_filters = json.loads(filters_file.read_text())
+    for filter in custom_filters:
+        filter['function'] = create_filter_from_string(filter['definition'])
+    return custom_filters

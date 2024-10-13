@@ -1,4 +1,4 @@
-from filterListener import filterListener
+from .filterListener import filterListener
 
 class FilterEvaluator(filterListener):
     def __init__(self):
@@ -27,22 +27,22 @@ class FilterEvaluator(filterListener):
     def exitPowerCondition(self, ctx):
         power = int(ctx.getChild(2).getText())
         operator = getIntComparisionFromText(ctx.getChild(1).getText())
-        self.stack.append(lambda card: operator(card['power'], power))
+        self.stack.append(lambda card: operator(card['power'] if 'power' in card else 0, power))
 
     def exitToughnessCondition(self, ctx):
         toughness = int(ctx.getChild(2).getText())
         operator = getIntComparisionFromText(ctx.getChild(1).getText())
-        self.stack.append(lambda card: operator(card['toughness'], toughness))
+        self.stack.append(lambda card: operator(card['toughness'] if 'toughness' in card else 0, toughness))
 
     def exitTypeCondition(self, ctx):
         type_line = ctx.getChild(2).getText().replace('"', '')
         operator = getStringComparisionFromText(ctx.getChild(1).getText())
-        self.stack.append(lambda card: operator(card['type_line'], type_line))
+        self.stack.append(lambda card: operator(card['type_line'] if 'type_line' in card else '', type_line))
 
     def exitTextCondition(self, ctx):
         oracle_text = ctx.getChild(2).getText().replace('"', '')
         operator = getStringComparisionFromText(ctx.getChild(1).getText())
-        self.stack.append(lambda card: operator(card['oracle_text'], oracle_text))
+        self.stack.append(lambda card: operator(card['oracle_text'] if 'oracle_text' in card else '', oracle_text))
 
 def getIntComparisionFromText(text):
     if text == '>':
