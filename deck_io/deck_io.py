@@ -24,6 +24,12 @@ def deck_details_file_path(username):
 
 def custom_filters_file_path(username):
     return USER_DATA_ROOT / username / 'custom_filters.json'
+
+def check_most_recent_user_file():
+    if not USER_DATA_ROOT.is_dir():
+        USER_DATA_ROOT.mkdir()
+    if not MOST_RECENT_USER_FILE.exists():
+        MOST_RECENT_USER_FILE.touch()
         
 def grab_decks_from_moxfield(username, update_loading_callback):
     """
@@ -136,7 +142,7 @@ def save_decks_to_file(deck_summaries, deck_details):
     username = deck_summaries[0]['createdByUser']['userName']
     
     if not user_data_folder(username).is_dir():
-        user_data_folder(username).mkdir()
+        user_data_folder(username).mkdir(parents=True)
         
     deck_summary_file_path(username).write_text(json.dumps(deck_summaries))   
     deck_details_file_path(username).write_text(json.dumps(deck_details))

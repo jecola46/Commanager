@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from .deck_manager_app import DeckManagerApp
-from deck_io import grab_decks_from_moxfield, load_decks_from_file, MOST_RECENT_USER_FILE
+from deck_io import grab_decks_from_moxfield, load_decks_from_file, MOST_RECENT_USER_FILE, check_most_recent_user_file
 from deck_collection import DeckCollection
 
 class CollectionLoader(tk.Tk):
@@ -52,6 +52,8 @@ class CollectionLoader(tk.Tk):
         # However, Button(), the UI button, does not. So, we're just accounting for both cases.
         username = self.username_entry.get()
         
+        check_most_recent_user_file()
+
         # This overwrites, not appends
         MOST_RECENT_USER_FILE.write_text(username + '\n', encoding="utf-8")
 
@@ -82,6 +84,8 @@ class CollectionLoader(tk.Tk):
         return update_label
 
     def load_decks_from_default_file(self):
+        check_most_recent_user_file()
+
         username = MOST_RECENT_USER_FILE.read_text(encoding="utf-8").strip()
         # COMM-24: give user a dropdown of saved users and then use the selected username
         
