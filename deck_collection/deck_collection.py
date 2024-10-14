@@ -63,7 +63,7 @@ class DeckCollection:
         return sorted_decks
 
     def count_cards_with_property(self, public_id, card_property_lambda):
-        return sum(1 for card_name, card_info in self.deck_details[public_id]['mainboard'].items() if card_property_lambda(card_info['card']))
+        return sum(card_info['quantity'] for card_name, card_info in self.deck_details[public_id]['mainboard'].items() if card_property_lambda(card_info['card']))
 
     def get_friendly_name_for_deck(self, deck, prefix=None):
         # Display deck name
