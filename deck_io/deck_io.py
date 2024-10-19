@@ -301,3 +301,16 @@ def load_custom_filters(username):
     for filter in custom_filters:
         filter['function'] = create_filter_from_string(filter['definition'])
     return custom_filters
+
+def save_new_filter(username, filter_name, filter_definition):
+    filters_file = custom_filters_file_path(username)
+    custom_filters = json.loads(filters_file.read_text())
+    custom_filters.append({'name': filter_name, 'definition': filter_definition})
+    with open(filters_file, 'w') as file:
+        json.dump(custom_filters, file, indent=4)
+
+    new_filter = {}
+    new_filter['name'] = filter_name
+    new_filter['definition'] = filter_definition
+    new_filter['function'] = create_filter_from_string(filter_definition)
+    return new_filter

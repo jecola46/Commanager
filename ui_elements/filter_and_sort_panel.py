@@ -1,7 +1,8 @@
 import tkinter as tk
 from deck_io import save_decks_to_file
 from deck_analysis_utils import DISPLAY_TO_INTERNAL_COLOR
-from deck_io.deck_io import load_custom_filters
+from deck_io.deck_io import load_custom_filters, save_new_filter
+from ui_elements.custom_sort_window import CustomSortWindow
 
 class FilterAndSortPanel(tk.Frame):
     def __init__(self, root, deck_collection):
@@ -100,3 +101,15 @@ class FilterAndSortPanel(tk.Frame):
     def save_and_swap_collection(self):
         save_decks_to_file(self.deck_collection.get_deck_summaries(), self.deck_collection.get_deck_details())
         self.root.return_to_deck_loader()
+
+    def add_custom_sort(self):
+        rule_var = tk.StringVar()
+        custom_sort_window = CustomSortWindow(self, rule_var)
+        self.wait_window(custom_sort_window)
+        print(f"Created rule: {rule_var.get()}")
+        filter_var = tk.BooleanVar()
+        checkbutton = tk.Checkbutton(self, text=rule_var.get(), variable=filter_var, command=self.filter_and_sort_decks)
+        checkbutton.pack(anchor='w')
+        self.sort_vars[rule_var.get()] = filter_var
+        new_filter = save_new_filter(self.deck_collection.get_user(), rule_var.get(), rule_var.get())
+        self.individual_card_sort_functions[rule_var.get()] = new_filter['function']
