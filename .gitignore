@@ -17,4 +17,7 @@ image_cache/*
 # Ignore user data
 user_data/*
 
+# Ignore local ant files
+grammar/.antlr/*
+
 .gitconfig

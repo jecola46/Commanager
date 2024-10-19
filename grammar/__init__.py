@@ -1,2 +1,1 @@
-from .custom_sort_rule import CustomSortRule
 from .filter_util import create_filter_from_string
