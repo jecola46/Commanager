@@ -3,6 +3,7 @@ from deck_io import save_decks_to_file
 from deck_analysis_utils import DISPLAY_TO_INTERNAL_COLOR
 from deck_io.deck_io import load_custom_filters, save_new_filter
 from ui_elements.custom_sort_window import CustomSortWindow
+from grammar import validate_filter
 
 class FilterAndSortPanel(tk.Frame):
     def __init__(self, root, deck_collection):
@@ -107,6 +108,9 @@ class FilterAndSortPanel(tk.Frame):
         custom_sort_window = CustomSortWindow(self, rule_var)
         self.wait_window(custom_sort_window)
         print(f"Created rule: {rule_var.get()}")
+        if not validate_filter(rule_var.get()):
+            print('Invalid filter')
+            return
         filter_var = tk.BooleanVar()
         checkbutton = tk.Checkbutton(self, text=rule_var.get(), variable=filter_var, command=self.filter_and_sort_decks)
         checkbutton.pack(anchor='w')

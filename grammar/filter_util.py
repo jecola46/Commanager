@@ -13,3 +13,11 @@ def create_filter_from_string(filter_string):
     parser.addParseListener(filter_evaluator)
     tree = parser.filter_()
     return filter_evaluator.getValue()
+
+def validate_filter(filter_string):
+    try:
+        create_filter_from_string(filter_string)
+        return True
+    except Exception as e:
+        print(e)
+        return False
