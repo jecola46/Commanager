@@ -100,8 +100,8 @@ class CollectionLoader(tk.Tk):
         self.destroy()
 
         deck_manager_app = DeckManagerApp(deck_collection)
-        deck_manager_app.minsize(600, 600)
-        deck_manager_app.geometry('1800x600')
+        deck_manager_app.minsize(600, 700)
+        deck_manager_app.geometry('1800x800')
         deck_manager_app.mainloop()
 
         self.should_restart = deck_manager_app.should_restart if hasattr(deck_manager_app, 'should_restart') else False

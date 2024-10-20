@@ -33,7 +33,7 @@ class CollectionScreen(tk.Frame):
 
     def create_filter_and_sort_ui(self):
         filter_and_sort_frame = FilterAndSortPanel(self, self.deck_collection)
-        filter_and_sort_frame.grid(row=1, column=0, padx=10, pady=10, sticky='n')
+        filter_and_sort_frame.grid(row=1, column=0, padx=10, pady=10, sticky='ns')
 
     def update_deck_lister(self, new_decks):
         self.deck_lister.destroy()
