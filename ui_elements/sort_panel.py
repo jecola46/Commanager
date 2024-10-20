@@ -28,11 +28,19 @@ class SortPanel(tk.Frame):
         self.add_sort_button.pack(anchor='w')
 
     def add_filter_rule(self, filter_name, filter_function):
+        candidate_filter_name = filter_name[:37] + "..." if len(filter_name) > 40 else filter_name
+        attempt = 1
+        while candidate_filter_name in self.sort_vars:
+            candidate_filter_name = f'{filter_name[:32]} ({attempt})...' if len(filter_name) > 35 else f'{filter_name[:35]} ({attempt})'
+            if attempt > 100:
+                print('Too many attempts to add filter rule')
+                return
+            attempt += 1
         filter_var = tk.BooleanVar()
-        checkbutton = tk.Checkbutton(self.sort_rule_frame, text=filter_name, variable=filter_var, command=self.filter_and_sort_callback)
+        checkbutton = tk.Checkbutton(self.sort_rule_frame, text=candidate_filter_name, variable=filter_var, command=self.filter_and_sort_callback)
         checkbutton.pack(anchor='w')
-        self.sort_vars[filter_name] = filter_var
-        self.individual_card_sort_functions[filter_name] = filter_function
+        self.sort_vars[candidate_filter_name] = filter_var
+        self.individual_card_sort_functions[candidate_filter_name] = filter_function
 
     def add_custom_sort(self):
         rule_var = tk.StringVar()
@@ -73,6 +81,4 @@ class SortPanel(tk.Frame):
         return len(self.get_all_checked_sorts()) > 0
     
     def get_all_checked_sorts(self):
-        print(self.sort_vars.keys())
-        print([sort_var_name for sort_var_name in self.sort_vars.keys() if self.sort_vars[sort_var_name].get()])
         return [sort_var_name for sort_var_name in self.sort_vars.keys() if self.sort_vars[sort_var_name].get()]
