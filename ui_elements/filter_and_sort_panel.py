@@ -54,7 +54,7 @@ class FilterAndSortPanel(tk.Frame):
         return filtered_decks
 
     def create_save_and_stats_ui(self):
-        self.swap_user_button = tk.Button(self, text='Swap User Data', height=2, width=10, command=self.save_and_swap_collection, bg='red')
+        self.swap_user_button = tk.Button(self, text='Swap User Data', height=4, width=15, command=self.save_and_swap_collection, bg='red')
         self.swap_user_button.pack(side=tk.BOTTOM)
 
     def save_and_swap_collection(self):
