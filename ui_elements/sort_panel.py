@@ -58,17 +58,21 @@ class SortPanel(tk.Frame):
 
     def sort_decks(self, decks):
         if self.is_sorting_enabled():
-            custom_sort_name = self.get_first_checked_sort()
-            sorted_decks = self.sort_by_custom_card_filter(decks, self.individual_card_sort_functions[custom_sort_name])
+            custom_sort_names = self.get_all_checked_sorts()
+            def sort_by_all_custom_filters(card):
+                for custom_sort_name in custom_sort_names:
+                    if not self.individual_card_sort_functions[custom_sort_name](card):
+                        return False
+                return True
+            sorted_decks = self.sort_by_custom_card_filter(decks, sort_by_all_custom_filters)
             return sorted_decks
         else:
             return decks
 
     def is_sorting_enabled(self):
-        return self.get_first_checked_sort() is not None
+        return len(self.get_all_checked_sorts()) > 0
     
-    def get_first_checked_sort(self):
-        for sort_var_name in self.sort_vars.keys():
-            if self.sort_vars[sort_var_name].get():
-                return sort_var_name
-        return None
+    def get_all_checked_sorts(self):
+        print(self.sort_vars.keys())
+        print([sort_var_name for sort_var_name in self.sort_vars.keys() if self.sort_vars[sort_var_name].get()])
+        return [sort_var_name for sort_var_name in self.sort_vars.keys() if self.sort_vars[sort_var_name].get()]
