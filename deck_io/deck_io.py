@@ -30,7 +30,7 @@ def check_most_recent_user_file():
         USER_DATA_ROOT.mkdir()
     if not MOST_RECENT_USER_FILE.exists():
         MOST_RECENT_USER_FILE.touch()
-        
+
 def grab_decks_from_moxfield(username, update_loading_callback):
     """
     Fetches deck summaries and details from Moxfield API for a given username.
@@ -294,16 +294,32 @@ def get_image_from_url(url, resize = None):
             return None
         
 def load_custom_filters(username):
+    user_folder = user_data_folder(username)
+    if not user_folder.exists():
+        user_folder.mkdir(parents=True)
+
     filters_file = custom_filters_file_path(username)
     if not filters_file.exists():
+        filters_file.touch()
+        filters_file.write_text("[]")
         return []
+    
     custom_filters = json.loads(filters_file.read_text())
     for filter in custom_filters:
         filter['function'] = create_filter_from_string(filter['definition'])
     return custom_filters
 
 def save_new_filter(username, filter_name, filter_definition):
+    user_folder = user_data_folder(username)
+    if not user_folder.exists():
+        user_folder.mkdir(parents=True)
+
     filters_file = custom_filters_file_path(username)
+
+    if not filters_file.exists():
+        filters_file.touch()
+        filters_file.write_text("[]")
+
     custom_filters = json.loads(filters_file.read_text())
     custom_filters.append({'name': filter_name, 'definition': filter_definition})
     with open(filters_file, 'w') as file:
