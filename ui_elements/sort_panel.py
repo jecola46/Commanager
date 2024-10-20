@@ -18,6 +18,9 @@ class SortPanel(tk.Frame):
         sort_label.pack(side=tk.TOP)
 
         card_filters = load_custom_filters(self.deck_collection.get_user())
+
+        self.sort_rule_frame = tk.Frame(self)
+        self.sort_rule_frame.pack(anchor='w')
         for filter in card_filters:
             self.add_filter_rule(filter['name'], filter['function'])
 
@@ -26,7 +29,7 @@ class SortPanel(tk.Frame):
 
     def add_filter_rule(self, filter_name, filter_function):
         filter_var = tk.BooleanVar()
-        checkbutton = tk.Checkbutton(self, text=filter_name, variable=filter_var, command=self.filter_and_sort_callback)
+        checkbutton = tk.Checkbutton(self.sort_rule_frame, text=filter_name, variable=filter_var, command=self.filter_and_sort_callback)
         checkbutton.pack(anchor='w')
         self.sort_vars[filter_name] = filter_var
         self.individual_card_sort_functions[filter_name] = filter_function
