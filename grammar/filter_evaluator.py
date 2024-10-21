@@ -22,17 +22,17 @@ class FilterEvaluator(filterListener):
     def exitManaCondition(self, ctx):
         mana_value = int(ctx.getChild(2).getText())
         operator = getIntComparisionFromText(ctx.getChild(1).getText())
-        self.stack.append(lambda card: operator(card['cmc'], mana_value))
+        self.stack.append(lambda card: operator(get_int_field_from_card(card['cmc']), mana_value))
 
     def exitPowerCondition(self, ctx):
         power = int(ctx.getChild(2).getText())
         operator = getIntComparisionFromText(ctx.getChild(1).getText())
-        self.stack.append(lambda card: operator(card['power'] if 'power' in card else 0, power))
+        self.stack.append(lambda card: operator(get_int_field_from_card(card['power']) if 'power' in card else 0, power))
 
     def exitToughnessCondition(self, ctx):
         toughness = int(ctx.getChild(2).getText())
         operator = getIntComparisionFromText(ctx.getChild(1).getText())
-        self.stack.append(lambda card: operator(card['toughness'] if 'toughness' in card else 0, toughness))
+        self.stack.append(lambda card: operator(get_int_field_from_card(card['toughness']) if 'toughness' in card else 0, toughness))
 
     def exitTypeCondition(self, ctx):
         type_line = ctx.getChild(2).getText().replace('"', '')
@@ -61,3 +61,9 @@ def getStringComparisionFromText(text):
         return lambda a, b: b.lower() not in a.lower()
     else:
         print('Unknown operator: ' + text)
+
+def get_int_field_from_card(field):
+    try:
+        return int(field)
+    except ValueError as e:
+        return 0
