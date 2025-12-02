@@ -12,6 +12,32 @@ class DeckCollection:
         return self.deck_summaries
 
     def set_deck_details(self, deck_details):
+        with open("./user_data/cards.json", "r", encoding="utf-8") as file:
+            card_list = json.load(file)
+
+        # Function to find a card by name
+        def find_card_by_name(name, card_list):
+            for card in card_list:
+                if card.get("name") == name:
+                    return card
+            print(f"Could not find {name}")
+            return None
+
+        end_collection = {}
+        for publicId, deck in deck_details.items():
+            mainboard = {}
+            cards = deck['list']
+            for card in cards:
+                start = card.find(" ") + 1
+                end = card.find("(") - 1
+                card = card[start:end]
+                card_name = find_card_by_name(card, card_list)
+                if card_name is None:
+                    print(f"In list {publicId}")
+                mainboard[card] = card_name
+            end_collection[publicId] = deck
+            end_collection[publicId]["mainboard"] = mainboard
+
         self.deck_details = deck_details
 
     def get_deck_details(self):
@@ -63,7 +89,9 @@ class DeckCollection:
         return sorted_decks
 
     def count_cards_with_property(self, public_id, card_property_lambda):
-        return sum(card_info['quantity'] for card_name, card_info in self.deck_details[public_id]['mainboard'].items() if card_property_lambda(card_info['card']))
+        for card_name, card_info in self.deck_details[public_id]['mainboard'].items():
+            card_property_lambda(card_info)
+        return sum(1 for card_name, card_info in self.deck_details[public_id]['mainboard'].items() if card_property_lambda(card_info))
 
     def get_friendly_name_for_deck(self, deck, prefix=None):
         # Display deck name

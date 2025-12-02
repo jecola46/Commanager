@@ -4,6 +4,7 @@ import time
 import requests
 import os
 import re
+import chardet
 from PIL import Image, ImageTk
 from io import BytesIO
 from threading import Thread
@@ -45,16 +46,60 @@ def grab_decks_from_moxfield(username, update_loading_callback):
       - deck_summaries (list): List of deck summaries (basic information).
       - deck_details (dict): Dictionary containing detailed information for each deck, keyed by deck ID.
     """
-    api_url = f"https://api.moxfield.com/v2/users/{username}/decks?pageNumber=1&pageSize=99999"
+    #api_url = f"https://api.moxfield.com/v2/users/{username}/decks?pageNumber=1&pageSize=99999"
+    api_url = f"https://api2.moxfield.com/v2/decks/search-sfw?includePinned=true&showIllegal=true&authorUserNames=Dislexel&pageNumber=1&pageSize=12&sortType=updated&sortDirection=descending&board=mainboard"
 
-    # Define headers to mimic a browser request
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    cookies = {
+        '_ga': 'GA1.1.1117942161.1745949890',
+        'ncmp.domain': 'moxfield.com',
+        'panoramaId_expiry': '1746554689346',
+        '_cc_id': 'a833c2ff602cb2c1d511f0ef02e742b7',
+        'panoramaId': '90b84f2b3c2aad5d0a43ade8ced84945a702088be66fb9ff137ae796d8e10a6e',
+        '_ga_BW2XPQDNK2': 'GS1.1.1745949890.1.0.1745949890.0.0.0',
+        '_sharedid': '4018b827-22d8-44cf-a35b-8ccace0aea5a',
+        '_sharedid_cst': 'VyxHLMwsHQ%3D%3D',
+        'cto_bundle': 'NvOIC19pT0ZlQTMwQ1YlMkZwaCUyRm9kMUxrQ0pDbXRtMk9VVlVWcjNQbnBTcDNsdFVlTjJQUG8ydjhFRmtJVk1oRVdpaDVtdHUlMkYlMkZnbWtnU0dPUUZsNCUyQjlJUDc1ZklMUWg2SGZwOW5wb2t5REZNdHdCSDIlMkZJbWNwR0QxZjBkbEZJbktRVm4zZw',
+        'cto_bidid': '1Vr6t19IaVNtbmslMkJvVW9HZXZOQ1c3dmdkMWlUaCUyRm1HeXgxdUtIJTJCTHZ3UUg5UnFTMVJ1MUZzU1VIMnY0ZUY4eUFQU3VFMzBDdk40V2tFVElzc1JPdExQSFZuZyUzRCUzRA',
     }
+
+    headers = {
+        'accept': 'application/json, text/plain, */*',
+        'accept-language': 'en-US,en;q=0.9',
+        'authorization': 'Bearer undefined',
+        'origin': 'https://moxfield.com',
+        'priority': 'u=1, i',
+        'referer': 'https://moxfield.com/',
+        'sec-ch-ua': '"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-site',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+        'x-moxfield-version': '2025.04.27.1',
+        # 'cookie': '_ga=GA1.1.1117942161.1745949890; ncmp.domain=moxfield.com; panoramaId_expiry=1746554689346; _cc_id=a833c2ff602cb2c1d511f0ef02e742b7; panoramaId=90b84f2b3c2aad5d0a43ade8ced84945a702088be66fb9ff137ae796d8e10a6e; _ga_BW2XPQDNK2=GS1.1.1745949890.1.0.1745949890.0.0.0; _sharedid=4018b827-22d8-44cf-a35b-8ccace0aea5a; _sharedid_cst=VyxHLMwsHQ%3D%3D; cto_bundle=NvOIC19pT0ZlQTMwQ1YlMkZwaCUyRm9kMUxrQ0pDbXRtMk9VVlVWcjNQbnBTcDNsdFVlTjJQUG8ydjhFRmtJVk1oRVdpaDVtdHUlMkYlMkZnbWtnU0dPUUZsNCUyQjlJUDc1ZklMUWg2SGZwOW5wb2t5REZNdHdCSDIlMkZJbWNwR0QxZjBkbEZJbktRVm4zZw; cto_bidid=1Vr6t19IaVNtbmslMkJvVW9HZXZOQ1c3dmdkMWlUaCUyRm1HeXgxdUtIJTJCTHZ3UUg5UnFTMVJ1MUZzU1VIMnY0ZUY4eUFQU3VFMzBDdk40V2tFVElzc1JPdExQSFZuZyUzRCUzRA',
+    }
+
+    params = {
+        'includePinned': 'true',
+        'showIllegal': 'true',
+        'authorUserNames': 'Dislexel',
+        'pageNumber': '1',
+        'pageSize': '12',
+        'sortType': 'updated',
+        'sortDirection': 'descending',
+        'board': 'mainboard',
+    }
+
+    
+    
 
     try:
         update_loading_callback('Retreiving list of decks', 0)
-        response = requests.get(api_url, headers=headers)
+        print('*******')
+        response = requests.get('https://api2.moxfield.com/v2/decks/search-sfw', params=params, cookies=cookies, headers=headers)
+
+        print(response)
 
         if response.status_code == 200:
             decks_json = response.json()
@@ -87,7 +132,9 @@ def grab_decks_from_moxfield(username, update_loading_callback):
             return deck_summaries, deck_details
 
         else:
-            print(f"Failed to get user decks. Response: {response} Status Code: {response.status_code}")
+            print(response.headers.get("content-type"))
+            print(chardet.detect(response.content))
+            print(f"Failed to get user decks. Response: {response.content.decode('utf-8', errors='ignore')} Status Code: {response.status_code}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -123,7 +170,7 @@ def load_decks_from_file(username):
         return []
 
     try:
-        raw_deck_details = deck_details_file_path(username).read_text()
+        raw_deck_details = deck_details_file_path(username).read_text(encoding="utf-8")
         deck_details = json.loads(raw_deck_details)
     except FileNotFoundError:
         # Needs to be tested with pathlib -- COMM-23

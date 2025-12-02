@@ -11,7 +11,6 @@ class FilterAndSortPanel(tk.Frame):
         self.creating_sort = False
         self.create_filter_ui()
         self.create_sort_ui()
-        self.create_save_and_stats_ui()
 
     def create_filter_ui(self):
         # Define a dictionary to store the filter variables
@@ -52,11 +51,3 @@ class FilterAndSortPanel(tk.Frame):
                 filtered_decks.append(deck)
 
         return filtered_decks
-
-    def create_save_and_stats_ui(self):
-        self.swap_user_button = tk.Button(self, text='Swap User Data', height=4, width=15, command=self.save_and_swap_collection, bg='red')
-        self.swap_user_button.pack(side=tk.BOTTOM)
-
-    def save_and_swap_collection(self):
-        save_decks_to_file(self.deck_collection.get_deck_summaries(), self.deck_collection.get_deck_details())
-        self.root.return_to_deck_loader()

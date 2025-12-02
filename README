@@ -3,3 +3,5 @@ This is a tool to help you manage your Magic: The Gathering decks.
 Mock: https://www.figma.com/design/UXX0DBb6ORmVLz9XL8olxc/MTG-tool?node-id=0-1
 
 Jira: https://wanderaway.atlassian.net/jira/software/projects/COMM/boards/3
+
+doskey antlr4=c:\Users\Al\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts\antlr4.exe $*
